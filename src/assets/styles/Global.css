@@ -1,0 +1,287 @@
+/* =========================================
+   1. VARIABLES DE TEMA (MODO DARK - TESEN FACTORY)
+   ========================================= */
+:root {
+  /* Fondo de la Pantalla (El más oscuro - Negro Profundo) */
+  --bg-main: #020617;       
+  
+  /* Fondo de Tarjetas/Paneles (Negro Sidebar) */
+  --bg-card: #0f172a;       
+  
+  /* Textos */
+  --text-primary: #f1f5f9;  /* Blanco */
+  --text-secondary: #94a3b8;/* Gris claro */
+  
+  /* Elementos de UI */
+  --border-color: #1e293b;  /* Bordes sutiles */
+  --input-bg: #1e293b;      /* Inputs un poco más claros para que resalten */
+  
+  /* Colores de Marca */
+  --primary-color: #ef4444; /* ROJO MARCA */
+  --btn-primary: #ef4444;   /* Botones Rojos */
+  --btn-hover: #dc2626;     /* Rojo más oscuro al pasar mouse */
+  
+  /* Modales */
+  --modal-overlay: rgba(0, 0, 0, 0.85);
+}
+
+/* =========================================
+   2. ESTILOS GLOBALES
+   ========================================= */
+
+body {
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  -webkit-font-smoothing: antialiased; 
+}
+
+.usuarios-container, .clientes-container, .vehiculos-container {
+  padding: 20px;
+  min-height: 100vh; 
+}
+
+.title {
+  font-size: 26px;
+  margin-bottom: 20px;
+  color: var(--text-primary);
+}
+
+.badge{
+  background: 'rgba(16, 185, 129, 0.1)'; 
+  padding: '2px 6px';
+  border-radius: 4; 
+  font-weight: 'bold';
+  font-size: 0.85rem;
+}
+
+/* Tarjetas (Formularios y Tablas) */
+.form-card, .table-card {
+  background-color: var(--bg-card); 
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 25px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5); 
+  border: 1px solid var(--border-color);
+}
+
+.table-card {
+  margin-top: 15px;
+}
+
+.form-card h2 {
+  margin-bottom: 15px;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 10px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 20px;
+}
+
+/* Inputs y Selects */
+input, select, textarea {
+  padding: 10px 15px;
+  border: 1px solid #334155; 
+  border-radius: 6px;
+  background-color: var(--input-bg); 
+  color: #ffffff;
+  outline: none;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--primary-color);
+  background-color: #0f172a; 
+  box-shadow: 0 0 0 1px var(--primary-color);
+}
+
+/* Placeholder */
+::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.6;
+}
+
+/* Botones */
+.btn-crear {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: var(--btn-primary);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s;
+  box-shadow: 0 4px 6px rgba(239, 68, 68, 0.2);
+}
+
+.btn-crear:hover {
+  background: var(--btn-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 8px rgba(239, 68, 68, 0.3);
+}
+
+/* =========================================
+   3. MODALES (NEGROS)
+   ========================================= */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(3px);
+}
+
+.modal-content {
+  background: var(--bg-card); 
+  width: 600px;
+  padding: 0; 
+  border-radius: 12px;
+  position: relative;
+  animation: fadeIn .2s ease-out;
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+  overflow: hidden; 
+}
+
+.modal-header {
+    background: #020617;
+    padding: 15px 25px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-body {
+    padding: 25px;
+}
+
+.modal-close {
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: var(--text-secondary);
+}
+
+.modal-close:hover {
+  color: var(--primary-color);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* =========================================
+   4. ESTILOS DE LA TABLA (Override - TEMA TESEN NEGRO/ROJO)
+   ========================================= */
+/* Forzamos el fondo gris neutro (#1f1f22) en la tabla */
+.rdt_Table {
+    background-color: #1f1f22 !important; 
+    color: #f1f5f9 !important;
+    border-radius: 8px;
+}
+
+.rdt_TableHeadRow {
+    background-color: #151517 !important; 
+    border-bottom: 1px solid #2d2d30 !important; 
+    color: #9ca3af !important; 
+    font-weight: bold !important;
+    text-transform: uppercase;
+    font-size: 0.8rem !important;
+}
+
+.rdt_TableRow {
+    background-color: #1f1f22 !important; 
+    border-bottom: 1px solid #2d2d30 !important;
+    color: #f1f5f9 !important;
+    font-size: 0.9rem !important;
+}
+
+/* CORRECCIÓN DEL HOVER */
+.rdt_TableRow:hover {
+    background-color: #2d2d30 !important; 
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.rdt_Pagination {
+    background-color: #1f1f22 !important; 
+    color: #9ca3af !important;
+    border-top: 1px solid #2d2d30 !important;
+}
+
+/* Scrollbar personalizado*/
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #151517; 
+}
+::-webkit-scrollbar-thumb {
+    background: #2d2d30; 
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #4b5563; 
+}
+/* =========================================
+   PARCHE PARA SOBRESCRIBIR ESTILOS VERDES DE LA PLANTILLA
+   ========================================= */
+
+/* 1. Cambiar el color del Switch/Toggle a Rojo Marca */
+.switch input:checked + .slider {
+  background-color: #ef4444 !important; 
+}
+.switch input:focus + .slider {
+  box-shadow: 0 0 1px #ef4444 !important;
+}
+
+/* 2. Cambiar botones de filtro y acción a Rojo */
+.btn-filter, .btn-action {
+    background-color: #ef4444 !important;
+    color: white !important;
+    border: none !important;
+}
+.btn-filter:hover, .btn-action:hover {
+    background-color: #dc2626 !important;
+}
+
+/* 3. Cambiar pestañas activas (Tabs) a Rojo */
+.nav-tabs .nav-link.active,
+.nav-pills .nav-link.active {
+    background-color: #ef4444 !important;
+    color: white !important;
+    border-color: #ef4444 !important;
+}
+.nav-tabs .nav-link, .nav-pills .nav-link {
+    color: #9ca3af !important; 
+}
+.nav-tabs .nav-link:hover, .nav-pills .nav-link:hover {
+    color: #ef4444 !important;
+}
+
+/* 4. Asegurar que el fondo de la tabla sea el gris neutro correcto */
+.table-card {
+    background-color: #1f1f22 !important;
+    border: 1px solid #2d2d30 !important;
+}
