@@ -9,6 +9,7 @@ import Clientes from "./components/Clientes";
 import Vehiculos from "./components/Vehiculos";
 import Repuestos from "./components/ProductoList";
 import Stock from "./components/Stock";
+import Servicios from "./components/Servicio";
 import MainLayout from "./components/layout/MainLayout";
 import { isAccessTokenValid } from "./services/authService";
 
@@ -28,7 +29,6 @@ function ProtectedRoute({ children, title }) {
 
   return (
     <MainLayout title={title}>
-      {/* 3. Envolvemos los hijos en Suspense para manejar la espera */}
       <Suspense fallback={<LoadingFallback />}>
         {children}
       </Suspense>
@@ -86,7 +86,7 @@ function App() {
         <Route path="/marcas" element={<ProtectedRoute title="Marcas"> <Marcas /> </ProtectedRoute>} />
         <Route path="/vehiculos" element={<ProtectedRoute title="Vehículos"> <Vehiculos /> </ProtectedRoute>} />
         <Route path="/stock" element={<ProtectedRoute title="Stock"> <Stock /> </ProtectedRoute>} />
-
+        <Route path="/servicios" element={<ProtectedRoute title="Servicios"> <Servicios /> </ProtectedRoute>} />
         {/* Redirección por defecto */}
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>

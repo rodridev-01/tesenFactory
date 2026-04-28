@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { fetchWithAuth } from "../../services/authService";
 import GlobalDataTable from "../GlobalDatatable";
+import RepuestoModal from "../modals/orden/RepuestoModal";
 
 function Repuesto() {
 
@@ -114,101 +115,29 @@ function Repuesto() {
         pagination
       />
 
-      {showModal && (
-        <div className="modal">
-
-          <h3>Orden #{ordenSeleccionada?.id_orden}</h3>
-
-          {/* 🔹 DETALLES EXISTENTES */}
-          {detalles.map(d => {
-            const producto = getProducto(d.idProducto);
-
-            return (
-              <div key={d.id} style={{
-                display: "flex",
-                justifyContent: "space-between",
-                marginBottom: 10
-              }}>
-
-                <span>{d.descripcion}</span>
-                <span>x{d.cantidad}</span>
-                <span>S/ {d.precioUnitario}</span>
-
-                <span>
-                  {d.aprobado ? "✅" : "⏳"}
-                </span>
-
-                {!d.aprobado && (
-                  <button onClick={() => aprobarDetalle(d.id)}>
-                    Aprobar
-                  </button>
-                )}
-
-              </div>
-            );
-          })}
-
-          <hr />
-
-          {/* 🔹 AGREGAR NUEVO */}
-          <h4>Agregar repuesto</h4>
-
-          <select
-            value={nuevoDetalle.idProducto}
-            onChange={e =>
-              setNuevoDetalle({
-                ...nuevoDetalle,
-                idProducto: e.target.value
-              })
+      <RepuestoModal
+        showModal={showModal}
+        setShowModal={setShowModal}
+        ordenSeleccionada={ordenSeleccionada}
+        detalles={detalles}
+        productos={productos}
+        nuevoDetalle={nuevoDetalle}
+        setNuevoDetalle={setNuevoDetalle}
+        agregarDetalle={agregarDetalle}
+        aprobarDetalle={aprobarDetalle}
+        aprobarOrden={async () => {
+          await fetchWithAuth(
+            `http://localhost:8080/api/ordenes/${ordenSeleccionada.id_orden}/aprobar`,
+            {
+              method: "PUT",
             }
-          >
-            <option value="">Seleccionar</option>
-            {productos.map(p => (
-              <option
-                key={p.id_producto}
-                value={p.id_producto}
-              >
-                {p.nombre}
-              </option>
-            ))}
-          </select>
+          );
 
-          <input
-            type="number"
-            value={nuevoDetalle.cantidad}
-            onChange={e =>
-              setNuevoDetalle({
-                ...nuevoDetalle,
-                cantidad: Number(e.target.value)
-              })
-            }
-          />
-
-          <button onClick={agregarDetalle}>
-            Agregar
-          </button>
-
-          <br /><br />
-
-          {/* 🔹 APROBAR ORDEN */}
-          <button onClick={async () => {
-            await fetchWithAuth(`http://localhost:8080/api/ordenes/${ordenSeleccionada.id_orden}/aprobar`, {
-              method: "PUT"
-            });
-
-            alert("Orden aprobada");
-            setShowModal(false);
-            loadOrdenes();
-          }}>
-            Aprobar Orden
-          </button>
-
-          <button onClick={() => setShowModal(false)}>
-            Cerrar
-          </button>
-
-        </div>
-      )}
+          alert("Orden aprobada");
+          setShowModal(false);
+          loadOrdenes();
+        }}
+      />
 
     </div>
   );

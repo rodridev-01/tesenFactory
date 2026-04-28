@@ -21,9 +21,7 @@ export default function SearchableSelect({
   );
 
   useEffect(() => {
-    if (!value) {
-      setQuery("");
-    }
+    if (!value) setQuery("");
   }, [value]);
 
   const filtered = useMemo(() => {
@@ -55,44 +53,66 @@ export default function SearchableSelect({
         {label}
       </label>
 
-      <div style={{ position: "relative" }}>
-        <FaSearch
-          style={{
-            position: "absolute",
-            left: 12,
-            top: 12,
-            color: "#9ca3af"
-          }}
-        />
+      <div style={{ display: "flex", gap: 8 }}>
+        <div style={{ position: "relative", flex: 1 }}>
+          <FaSearch
+            style={{
+              position: "absolute",
+              left: 12,
+              top: 12,
+              color: "#9ca3af"
+            }}
+          />
 
-        <input
-          type="text"
-          value={open ? query : (selected ? getOptionLabel(selected) : "")}
-          onChange={(e) => {
-            setQuery(e.target.value);
-            setOpen(true);
+          <input
+            type="text"
+            value={open ? query : (selected ? getOptionLabel(selected) : "")}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              setOpen(true);
 
-            if (!e.target.value) {
-              onChange("");
-            }
-          }}
-          onFocus={() => {
-            setQuery("");
-            setOpen(true);
-          }}
-          placeholder={placeholder}
+              if (!e.target.value) onChange("");
+            }}
+            onFocus={() => {
+              setQuery("");
+              setOpen(true);
+            }}
+            placeholder={placeholder}
+            style={{
+              width: "100%",
+              padding: "10px 12px 10px 35px",
+              borderRadius: 8,
+              border: "1px solid #2d2d30",
+              background: "#151517",
+              color: "#f1f5f9"
+            }}
+          />
+        </div>
+
+        <button
+          type="button"
+          onClick={onAddNew}
           style={{
-            width: "100%",
-            padding: "10px 12px 10px 35px",
+            padding: "0 14px",
+            height: 42,
             borderRadius: 8,
             border: "1px solid #2d2d30",
-            background: "#151517",
-            color: "#f1f5f9"
+            background: "#ef4444",
+            color: "white",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+            whiteSpace: "nowrap"
           }}
-        />
+        >
+          <FaPlus />
+          {addLabel}
+        </button>
       </div>
 
-      {open && (
+      {/* DROPDOWN */}
+      {open && filtered.length > 0 && (
         <div
           style={{
             position: "absolute",
@@ -108,43 +128,21 @@ export default function SearchableSelect({
             zIndex: 1000
           }}
         >
-          {filtered.length > 0 ? (
-            filtered.map(item => (
-              <div
-                key={getOptionValue(item)}
-                onClick={() => handleSelect(item)}
-                style={{
-                  padding: "10px 12px",
-                  cursor: "pointer",
-                  color: "#f1f5f9",
-                  fontSize: 15,
-                  borderBottom: "1px solid #2d2d30"
-                }}
-              >
-                {getOptionLabel(item)}
-              </div>
-            ))
-          ) : (
-            <button
-              type="button"
-              onClick={onAddNew}
+          {filtered.map(item => (
+            <div
+              key={getOptionValue(item)}
+              onClick={() => handleSelect(item)}
               style={{
-                width: "100%",
-                padding: "12px",
-                background: "transparent",
-                border: "none",
-                color: "#ef4444",
+                padding: "10px 12px",
                 cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 8,
-                fontWeight: "bold"
+                color: "#f1f5f9",
+                fontSize: 14,
+                borderBottom: "1px solid #2d2d30"
               }}
             >
-              <FaPlus /> {addLabel}
-            </button>
-          )}
+              {getOptionLabel(item)}
+            </div>
+          ))}
         </div>
       )}
     </div>

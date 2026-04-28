@@ -68,9 +68,9 @@ function GlobalModal({ isOpen, onClose, type = "info", title, message }) {
             background: "#151517",
           }}
         >
-          <span style={{ color: "#f1f5f9", fontWeight: 600 }}>
+          <h3 style={{ color: "#f1f5f9"}}>
             {title || "Mensaje del sistema"}
-          </span>
+          </h3>
 
           <button
             onClick={onClose}
@@ -86,7 +86,7 @@ function GlobalModal({ isOpen, onClose, type = "info", title, message }) {
         </div>
 
         {/* BODY ICONO + TEXTO */}
-        <div style={{ padding: "22px 18px" }}>
+        <div style={{ padding: "2px 18px" }}>
           <div
             style={{
               display: "flex",

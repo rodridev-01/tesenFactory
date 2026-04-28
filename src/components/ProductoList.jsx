@@ -65,7 +65,7 @@ function Productos() {
   const loadProductos = async (id) => {
     try {
       const [productosData, stockData] = await Promise.all([
-        fetchWithAuth(`http://localhost:8080/api/productos/taller/${id}`),
+        fetchWithAuth(`http://localhost:8080/api/productos/taller/${id}/productos`),
         fetchWithAuth(`http://localhost:8080/api/stock/almacen/${idAlmacen}`),
       ]);
 

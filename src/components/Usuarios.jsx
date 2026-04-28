@@ -113,7 +113,6 @@ function Usuarios() {
 
             {/* BOTÓN SUPERIOR */}
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 20 }}>
-                <h2 style={{ margin: 0, color: '#f1f5f9' }}>Gestión de Usuarios</h2>
                 <button className="btn-crear" onClick={() => { resetForm(); setModalOpen(true); }} style={{ marginTop: 0, width: 'auto', display: 'flex', alignItems: 'center', gap: '8px', background: '#ef4444', border: 'none', padding: '10px 20px', borderRadius: 6, color: 'white', fontWeight: 'bold', cursor: 'pointer' }}>
                     <FaPlus /> Agregar Usuario
                 </button>

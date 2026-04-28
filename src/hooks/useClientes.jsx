@@ -62,6 +62,7 @@ export function useClientes(idTaller = 1) {
     clientes,
     loading,
     clienteForm,
+    setClientes,
     setClienteForm,
     handleClienteChange,
     cargarClientes,

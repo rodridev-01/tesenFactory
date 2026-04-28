@@ -55,6 +55,16 @@ function ProductoModal({
     boxSizing: "border-box",
   };
 
+  const validateForm = () => {
+    if (!formData.nombre?.trim()) return "El nombre es obligatorio";
+    if (!formData.sku?.trim()) return "El SKU es obligatorio";
+    if (!formData.unidad?.trim()) return "La unidad es obligatoria";
+    if (!formData.precioCompra) return "El precio de compra es obligatorio";
+    if (!formData.precioVenta) return "El precio de venta es obligatorio";
+
+    return null;
+  };
+
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div
@@ -254,7 +264,14 @@ function ProductoModal({
 
             <button
               className="btn-crear"
-              onClick={onSave}
+              onClick={() => {
+                const error = validateForm();
+                if (error) {
+                  alert(error);
+                  return;
+                }
+                onSave();
+              }}
               style={{
                 marginTop: 0,
                 width: "auto",
