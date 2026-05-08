@@ -79,8 +79,8 @@ export const logout = async () => {
 export const fetchWithAuth = async (url, options = {}) => {
   let token = localStorage.getItem("accessToken");
 
-  const finalUrl = url.startsWith("http") 
-    ? url 
+  const finalUrl = url.startsWith("http")
+    ? url
     : `${BASE_URL}${url}`;
 
   if (!isAccessTokenValid()) {
@@ -98,24 +98,38 @@ export const fetchWithAuth = async (url, options = {}) => {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
       ...(options.headers || {})
-    },
-    body: options.body ? JSON.stringify(options.body) : null
+    }
   };
 
-  const res = await fetch(finalUrl, finalOptions);
+  if (options.body) {
+    finalOptions.body = JSON.stringify(options.body);
+  }
+
+  let res;
+
+  try {
+    res = await fetch(finalUrl, finalOptions);
+  } catch (err) {
+    throw new Error("Error de conexión con el servidor");
+  }
 
   const contentType = res.headers.get("content-type");
-  let data = null;
 
-  if (contentType && contentType.includes("application/json")) {
+  let data;
+
+  if (contentType?.includes("application/json")) {
     data = await res.json();
   } else {
     data = await res.text();
   }
 
   if (!res.ok) {
-    throw data;
+    throw new Error(
+      typeof data === "string"
+        ? data
+        : JSON.stringify(data)
+    );
   }
 
-  return data;
+  return data ?? null;
 };
