@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:8080/api/auth";
+import BASE_URL, { API_URL } from '../config';
 
 // Parse JWT
 const parseJwt = (token) => {
@@ -79,6 +79,10 @@ export const logout = async () => {
 export const fetchWithAuth = async (url, options = {}) => {
   let token = localStorage.getItem("accessToken");
 
+  const finalUrl = url.startsWith("http") 
+    ? url 
+    : `${BASE_URL}${url}`;
+
   if (!isAccessTokenValid()) {
     try {
       token = await refreshAccessToken();
@@ -95,13 +99,12 @@ export const fetchWithAuth = async (url, options = {}) => {
       Authorization: `Bearer ${token}`,
       ...(options.headers || {})
     },
-    body: options.body ?? null
+    body: options.body ? JSON.stringify(options.body) : null
   };
 
-  const res = await fetch(url, finalOptions);
+  const res = await fetch(finalUrl, finalOptions);
 
   const contentType = res.headers.get("content-type");
-
   let data = null;
 
   if (contentType && contentType.includes("application/json")) {

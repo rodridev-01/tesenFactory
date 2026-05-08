@@ -47,7 +47,7 @@ function Marcas() {
 
   const loadMarcas = async () => {
     try {
-      const data = await fetchWithAuth("http://localhost:8080/api/marcas");
+      const data = await fetchWithAuth("/marcas");
       setMarcas(data);
     } catch (err) {
       showNotification(
@@ -82,7 +82,7 @@ function Marcas() {
         const marca = marcas.find((m) => m.id_marca === editingId);
         body.activo = marca ? marca.activo : true;
 
-        await fetchWithAuth(`http://localhost:8080/api/marcas/${editingId}`, {
+        await fetchWithAuth(`/marcas/${editingId}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body),
@@ -94,7 +94,7 @@ function Marcas() {
           "La marca se actualizó correctamente."
         );
       } else {
-        await fetchWithAuth("http://localhost:8080/api/marcas", {
+        await fetchWithAuth("/marcas", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body),
@@ -130,7 +130,7 @@ function Marcas() {
 
     try {
       await fetchWithAuth(
-        `http://localhost:8080/api/marcas/${selectedMarca.id_marca}/toggle`,
+        `/marcas/${selectedMarca.id_marca}/toggle`,
         {
           method: "PATCH",
         }

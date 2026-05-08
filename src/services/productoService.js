@@ -1,33 +1,31 @@
-const API_URL = "http://localhost:8080/api/productos";
+import { fetchWithAuth } from "./authService";
+
+const PRODUCTOS_ENDPOINT = "/productos";
 
 export async function getProductos() {
-  const res = await fetch(API_URL);
-  return res.json();
+  return await fetchWithAuth(PRODUCTOS_ENDPOINT);
 }
 
 export async function getProducto(id) {
-  const res = await fetch(`${API_URL}/${id}`);
-  return res.json();
+  return await fetchWithAuth(`${PRODUCTOS_ENDPOINT}/${id}`);
 }
 
 export async function createProducto(producto) {
-  const res = await fetch(API_URL, {
+  return await fetchWithAuth(PRODUCTOS_ENDPOINT, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(producto)
+    body: producto 
   });
-  return res.json();
 }
 
 export async function updateProducto(id, producto) {
-  const res = await fetch(`${API_URL}/${id}`, {
+  return await fetchWithAuth(`${PRODUCTOS_ENDPOINT}/${id}`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(producto)
+    body: producto
   });
-  return res.json();
 }
 
 export async function deleteProducto(id) {
-  await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+  return await fetchWithAuth(`${PRODUCTOS_ENDPOINT}/${id}`, { 
+    method: "DELETE" 
+  });
 }

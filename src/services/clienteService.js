@@ -1,17 +1,17 @@
 import { fetchWithAuth } from "./authService";
 
-const BASE_URL = "http://localhost:8080/api/clientes";
+const CLIENTES_ENDPOINT = "/clientes";
 
 export const getClientesPorTaller = async (idTaller) => {
-  return await fetchWithAuth(`${BASE_URL}/taller/${idTaller}`);
+  return await fetchWithAuth(`${CLIENTES_ENDPOINT}/taller/${idTaller}`);
 };
 
 export const getCliente = async (id) => {
-  return await fetchWithAuth(`${BASE_URL}/${id}`);
+  return await fetchWithAuth(`${CLIENTES_ENDPOINT}/${id}`);
 };
 
 export const createCliente = async (cliente) => {
-  return await fetchWithAuth(BASE_URL, {
+  return await fetchWithAuth(CLIENTES_ENDPOINT, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -21,7 +21,7 @@ export const createCliente = async (cliente) => {
 };
 
 export const updateCliente = async (id, cliente) => {
-  return await fetchWithAuth(`${BASE_URL}/${id}`, {
+  return await fetchWithAuth(`${CLIENTES_ENDPOINT}/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -31,7 +31,7 @@ export const updateCliente = async (id, cliente) => {
 };
 
 export const deleteCliente = async (id) => {
-  return await fetchWithAuth(`${BASE_URL}/${id}`, {
+  return await fetchWithAuth(`${CLIENTES_ENDPOINT}/${id}`, {
     method: "DELETE",
   });
 };

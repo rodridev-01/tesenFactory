@@ -50,7 +50,7 @@ function Productos() {
 
   const loadAll = async () => {
     try {
-      const talleresData = await fetchWithAuth("http://localhost:8080/api/talleres");
+      const talleresData = await fetchWithAuth("/talleres");
       setTalleres(talleresData);
 
       const defaultTaller = talleresData[0]?.idTaller;
@@ -65,8 +65,8 @@ function Productos() {
   const loadProductos = async (id) => {
     try {
       const [productosData, stockData] = await Promise.all([
-        fetchWithAuth(`http://localhost:8080/api/productos/taller/${id}/productos`),
-        fetchWithAuth(`http://localhost:8080/api/stock/almacen/${idAlmacen}`),
+        fetchWithAuth(`/productos/taller/${id}/productos`),
+        fetchWithAuth(`/stock/almacen/${idAlmacen}`),
       ]);
 
       setProductos(productosData);
@@ -109,7 +109,7 @@ function Productos() {
 
   const handleCreate = async () => {
     try {
-      const response = await fetchWithAuth("http://localhost:8080/api/productos", {
+      const response = await fetchWithAuth("/productos", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -147,7 +147,7 @@ function Productos() {
 
   const handleUpdate = async () => {
     try {
-      await fetchWithAuth(`http://localhost:8080/api/productos/${editingId}`, {
+      await fetchWithAuth(`/productos/${editingId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -173,7 +173,7 @@ function Productos() {
 
   const handleSaveStock = async () => {
     try {
-      await fetchWithAuth("http://localhost:8080/api/stock", {
+      await fetchWithAuth("/stock", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -198,7 +198,7 @@ function Productos() {
 
     try {
       await fetchWithAuth(
-        `http://localhost:8080/api/productos/${id}/estado`,
+        `/productos/${id}/estado`,
         { method: "PATCH" }
       );
       await loadProductos(idTaller);
@@ -215,7 +215,7 @@ function Productos() {
 
     try {
       await fetchWithAuth(
-        `http://localhost:8080/api/stock/${idStock}/add?cantidad=${cantidad}`,
+        `/stock/${idStock}/add?cantidad=${cantidad}`,
         { method: "PATCH" }
       );
       await loadProductos(idTaller);
@@ -242,7 +242,7 @@ function Productos() {
 
     try {
       await fetchWithAuth(
-        `http://localhost:8080/api/stock/${row.idStock}/delete?cantidad=${cantidadNum}`,
+        `/stock/${row.idStock}/delete?cantidad=${cantidadNum}`,
         {
           method: "PATCH",
         }

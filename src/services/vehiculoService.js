@@ -1,31 +1,29 @@
 import { fetchWithAuth } from "./authService";
 
-const API = "http://localhost:8080/api/vehiculos";
-const CLIENTES_API = "http://localhost:8080/api/clientes";
-const MARCAS_API = "http://localhost:8080/api/marcas";
+const VEHICULOS_ENDPOINT = "/vehiculos";
+const CLIENTES_ENDPOINT = "/clientes";
+const MARCAS_ENDPOINT = "/marcas";
 
-export const getVehiculos = () => fetchWithAuth(API);
+export const getVehiculos = () => fetchWithAuth(VEHICULOS_ENDPOINT);
 
 export const getClientesPorTaller = (idTaller) =>
-  fetchWithAuth(`${CLIENTES_API}/taller/${idTaller}`);
+  fetchWithAuth(`${CLIENTES_ENDPOINT}/taller/${idTaller}`);
 
-export const getMarcas = () => fetchWithAuth(MARCAS_API);
+export const getMarcas = () => fetchWithAuth(MARCAS_ENDPOINT);
 
 export const createVehiculo = (vehiculo) =>
-  fetchWithAuth(API, {
+  fetchWithAuth(VEHICULOS_ENDPOINT, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(vehiculo),
+    body: vehiculo, 
   });
 
 export const updateVehiculo = (id, vehiculo) =>
-  fetchWithAuth(`${API}/${id}`, {
+  fetchWithAuth(`${VEHICULOS_ENDPOINT}/${id}`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(vehiculo),
+    body: vehiculo,
   });
 
 export const toggleVehiculo = (id) =>
-  fetchWithAuth(`${API}/${id}/toggle`, {
+  fetchWithAuth(`${VEHICULOS_ENDPOINT}/${id}/toggle`, {
     method: "PUT",
   });

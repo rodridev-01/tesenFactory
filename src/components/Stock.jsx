@@ -25,10 +25,10 @@ function Stock() {
 
   const loadAll = async () => {
     try {
-      const productosData = await fetchWithAuth(`http://localhost:8080/api/productos/taller/1`);
+      const productosData = await fetchWithAuth("/productos/taller/1");
       setProductos(productosData);
 
-      const stockData = await fetchWithAuth(`http://localhost:8080/api/stock/almacen/${idAlmacen}`);
+      const stockData = await fetchWithAuth(`/stock/almacen/${idAlmacen}`);
       setStock(stockData);
     } catch (err) {
       console.error("Error cargando datos:", err);
@@ -51,8 +51,9 @@ function Stock() {
       const payload = { idProducto: idProdNum, idAlmacen: idAlmacen, stockActual: stockActualNum, stockMinimo: stockMinimoNum };
       if (idStock) payload.idStock = idStock;
 
-      await fetchWithAuth("http://localhost:8080/api/stock", {
-        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload),
+      await fetchWithAuth("/stock", {
+        method: "POST", 
+        body: payload,
       });
 
       await loadAll(); clearForm(); setModalOpen(false);
@@ -68,50 +69,38 @@ function Stock() {
   const handleDelete = async (idStock) => {
     if (!window.confirm("¿Está seguro de eliminar este registro de stock?")) return;
     try {
-      await fetchWithAuth(`http://localhost:8080/api/stock/${idStock}`, { method: "DELETE" });
+      await fetchWithAuth(`/stock/${idStock}`, { method: "DELETE" });
       await loadAll(); alert("Eliminado correctamente");
     } catch (err) { alert("Error al eliminar: " + err.message); }
   };
 
   const handleAddStock = async (idStock) => {
-  const cantidad = prompt("Ingrese cantidad a agregar:");
+    const cantidad = prompt("Ingrese cantidad a agregar:");
+    if (!cantidad || isNaN(cantidad) || Number(cantidad) <= 0) return alert("Cantidad inválida");
 
-  if (!cantidad || isNaN(cantidad) || Number(cantidad) <= 0) {
-    return alert("Cantidad inválida");
-  }
+    try {
+      await fetchWithAuth(`/stock/${idStock}/add?cantidad=${cantidad}`, {
+        method: "PATCH",
+      });
+      await loadAll();
+      alert("Stock actualizado");
+    } catch (err) { alert("Error: " + err.message); }
+  };
 
-  try {
-    await fetchWithAuth(`http://localhost:8080/api/stock/${idStock}/add?cantidad=${cantidad}`, {
-      method: "PATCH",
-    });
+  const handleRemoveStock = async (idStock) => {
+    const cantidad = prompt("Ingrese cantidad a quitar:");
+    if (!cantidad || isNaN(cantidad) || Number(cantidad) <= 0) return alert("Cantidad inválida");
 
-    await loadAll();
-    alert("Stock actualizado");
-  } catch (err) {
-    alert("Error: " + err.message);
-  }
-};
+    try {
+      await fetchWithAuth(`/stock/${idStock}/delete?cantidad=${cantidad}`, {
+        method: "PATCH",
+      });
+      await loadAll();
+      alert("Stock actualizado");
+    } catch (err) { alert("Error: " + err.message); }
+  };
 
-const handleRemoveStock = async (idStock) => {
-  const cantidad = prompt("Ingrese cantidad a quitar:");
-
-  if (!cantidad || isNaN(cantidad) || Number(cantidad) <= 0) {
-    return alert("Cantidad inválida");
-  }
-
-  try {
-    await fetchWithAuth(`http://localhost:8080/api/stock/${idStock}/delete?cantidad=${cantidad}`, {
-      method: "PATCH",
-    });
-
-    await loadAll();
-    alert("Stock actualizado");
-  } catch (err) {
-    alert("Error: " + err.message);
-  }
-};
-
-  // --- ESTILOS VISUALES ---
+  // --- ESTILOS ---
   const labelStyle = { display: 'block', marginBottom: '6px', fontWeight: '600', color: '#cbd5e1', fontSize: '0.85rem' };
   const inputContainer = { position: 'relative', width: '100%' };
   const iconInInput = { position: 'absolute', left: '12px', top: '11px', color: '#9ca3af', fontSize: '15px' };
@@ -129,27 +118,10 @@ const handleRemoveStock = async (idStock) => {
       name: "Acciones",
       cell: (row) => (
         <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
-          
-          <button onClick={() => handleAddStock(row.idStock)} title="Agregar Stock"
-            style={{ border: 'none', background: 'transparent', color: '#10b981', cursor: 'pointer' }}>
-            <FaPlus size={16} />
-          </button>
-
-          <button onClick={() => handleRemoveStock(row.idStock)} title="Quitar Stock"
-            style={{ border: 'none', background: 'transparent', color: '#f59e0b', cursor: 'pointer' }}>
-            <FaLayerGroup size={16} />
-          </button>
-
-          <button onClick={() => openEditModal(row)} title="Editar"
-            style={{ border: 'none', background: 'transparent', color: '#3b82f6', cursor: 'pointer' }}>
-            <FaEdit size={18} />
-          </button>
-
-          <button onClick={() => handleDelete(row.idStock)} title="Eliminar"
-            style={{ border: 'none', background: 'transparent', color: '#ef4444', cursor: 'pointer' }}>
-            <FaTrash size={18} />
-          </button>
-
+          <button onClick={() => handleAddStock(row.idStock)} title="Agregar Stock" style={{ border: 'none', background: 'transparent', color: '#10b981', cursor: 'pointer' }}><FaPlus size={16} /></button>
+          <button onClick={() => handleRemoveStock(row.idStock)} title="Quitar Stock" style={{ border: 'none', background: 'transparent', color: '#f59e0b', cursor: 'pointer' }}><FaLayerGroup size={16} /></button>
+          <button onClick={() => openEditModal(row)} title="Editar" style={{ border: 'none', background: 'transparent', color: '#3b82f6', cursor: 'pointer' }}><FaEdit size={18} /></button>
+          <button onClick={() => handleDelete(row.idStock)} title="Eliminar" style={{ border: 'none', background: 'transparent', color: '#ef4444', cursor: 'pointer' }}><FaTrash size={18} /></button>
         </div>
       ),
     }
@@ -179,12 +151,10 @@ const handleRemoveStock = async (idStock) => {
       {modalOpen && (
         <div className="modal-overlay" onClick={() => setModalOpen(false)}>
           <div className="modal-content" style={{width:'500px', background:'#1f1f22', border:'1px solid #2d2d30', padding:0}} onClick={(e) => e.stopPropagation()}>
-            
             <div style={{ padding: '20px 30px', borderBottom: '1px solid #2d2d30', display:'flex', justifyContent:'space-between', alignItems:'center', background:'#151517' }}>
                 <h2 style={{margin:0, color:'#f1f5f9', fontSize:'1.3rem'}}>{idStock ? "Actualizar Stock" : "Crear Stock"}</h2>
                 <button onClick={() => setModalOpen(false)} style={{ background: 'transparent', border: 'none', fontSize: '1.3rem', color: '#9ca3af', cursor:'pointer' }}><FaTimes /></button>
             </div>
-
             <div style={{padding:'30px', display:'grid', gap:15}}>
               <div>
                   <label style={labelStyle}>Producto</label>
@@ -196,7 +166,6 @@ const handleRemoveStock = async (idStock) => {
                       </select>
                   </div>
               </div>
-
               <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:20}}>
                   <div>
                       <label style={labelStyle}>Stock Actual</label>
@@ -213,7 +182,6 @@ const handleRemoveStock = async (idStock) => {
                       </div>
                   </div>
               </div>
-
               <div style={{ marginTop: "20px", textAlign: "right", borderTop:'1px solid #2d2d30', paddingTop:'20px', display:'flex', justifyContent:'flex-end', gap:10 }}>
                 <button onClick={() => setModalOpen(false)} style={{ padding: '10px 20px', borderRadius: '6px', border: '1px solid #2d2d30', background: 'transparent', color: '#cbd5e1', cursor: 'pointer' }}>Cancelar</button>
                 <button className="btn-crear" onClick={handleSave} style={{width:'auto', marginTop:0, background:'#ef4444', border:'none', padding:'10px 25px', borderRadius:6, color:'white', fontWeight:'bold', cursor:'pointer'}}>

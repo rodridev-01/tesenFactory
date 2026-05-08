@@ -29,11 +29,11 @@ function Servicios() {
   const loadServicios = async () => {
     try {
       const data = await fetchWithAuth(
-        `http://localhost:8080/api/productos/taller/${idTallerFijo}/servicios`
+        `/productos/taller/${idTallerFijo}/servicios`
       );
       setServicios(data);
     } catch (err) {
-      console.error(err);
+      console.error("Error cargando servicios:", err);
     }
   };
 
@@ -50,16 +50,15 @@ function Servicios() {
 
   const handleCreate = async () => {
     try {
-      await fetchWithAuth("http://localhost:8080/api/productos", {
+      await fetchWithAuth("/productos", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+        body: {
           id_taller: idTallerFijo,
           tipo: "SERVICIO",
           nombre: formData.nombre,
           precio_venta: Number(formData.precioVenta),
           activo: true,
-        }),
+        },
       });
 
       setModalOpen(false);
@@ -73,17 +72,16 @@ function Servicios() {
   const handleUpdate = async () => {
     try {
       await fetchWithAuth(
-        `http://localhost:8080/api/productos/${editingId}`,
+        `/productos/${editingId}`,
         {
           method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
+          body: {
             id_taller: idTallerFijo,
             tipo: "SERVICIO",
             nombre: formData.nombre,
             precio_venta: Number(formData.precioVenta),
             activo: formData.activo,
-          }),
+          },
         }
       );
 
@@ -100,7 +98,7 @@ function Servicios() {
 
     try {
       await fetchWithAuth(
-        `http://localhost:8080/api/productos/${id}/estado`,
+        `/productos/${id}/estado`,
         { method: "PATCH" }
       );
       loadServicios();
@@ -136,7 +134,7 @@ function Servicios() {
       selector: (row) => row.precio_venta,
       cell: (row) => (
         <span style={{ fontWeight: "bold" }}>
-          S/ {Number(row.precio_venta).toFixed(2)}
+          S/ {Number(row.precio_venta || row.precioVenta).toFixed(2)}
         </span>
       ),
     },
@@ -154,18 +152,23 @@ function Servicios() {
       name: "Acciones",
       cell: (row) => (
         <div style={{ display: "flex", gap: 10 }}>
-          <button onClick={() => openEditModal(row)}>
-            <FaEdit />
+          <button 
+            onClick={() => openEditModal(row)}
+            style={{ background: 'transparent', border: 'none', color: '#3b82f6', cursor: 'pointer' }}
+          >
+            <FaEdit size={18} />
           </button>
 
-          <button onClick={() => handleDelete(row.id_producto)}>
-            <FaTrash />
+          <button 
+            onClick={() => handleDelete(row.id_producto || row.idProducto)}
+            style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer' }}
+          >
+            <FaTrash size={18} />
           </button>
         </div>
       ),
     },
   ];
-
   return (
     <div className="usuarios-container" style={{ padding: 20, background: "#151517" }}>
       

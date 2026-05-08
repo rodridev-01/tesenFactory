@@ -24,7 +24,7 @@ function Repuesto() {
 
   const loadOrdenes = async () => {
     const data = await fetchWithAuth(
-      "http://localhost:8080/api/ordenes/estado/repuestos"
+      "/ordenes/estado/repuestos"
     );
 
     const ordenesBase = data || [];
@@ -32,7 +32,7 @@ function Repuesto() {
     const ordenesConDetalles = await Promise.all(
       ordenesBase.map(async (o) => {
         const det = await fetchWithAuth(
-          `http://localhost:8080/api/ordenes/${o.id_orden}/detalles`
+          `/ordenes/${o.id_orden}/detalles`
         );
 
         return {
@@ -68,14 +68,14 @@ function Repuesto() {
   };
 
   const getProducto = (id) =>
-    productos.find(p => (p.id_producto || p.idProducto) == id);
+    productos.find(p => (p.id_producto || p.idProducto) === id);
 
   const getStock = (idProducto) =>
-    stock.find(s => s.idProducto == idProducto);
+    stock.find(s => s.idProducto === idProducto);
 
   // 🔥 APROBAR
   const aprobarDetalle = async (id) => {
-    await fetchWithAuth(`http://localhost:8080/api/ordenes/detalle/${id}/aprobar`, {
+    await fetchWithAuth(`/ordenes/detalle/${id}/aprobar`, {
       method: "PUT"
     });
 
@@ -96,7 +96,7 @@ function Repuesto() {
 
     const producto = getProducto(nuevoDetalle.idProducto);
 
-    await fetchWithAuth("/api/ordenes/detalle", {
+    await fetchWithAuth("/ordenes/detalle", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -223,7 +223,7 @@ function Repuesto() {
         aprobarDetalle={aprobarDetalle}
         aprobarOrden={async () => {
           await fetchWithAuth(
-            `http://localhost:8080/api/ordenes/${ordenSeleccionada.id_orden}/aprobar`,
+            `/ordenes/${ordenSeleccionada.id_orden}/aprobar`,
             {
               method: "PUT",
             }

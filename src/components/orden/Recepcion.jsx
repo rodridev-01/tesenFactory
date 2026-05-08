@@ -66,8 +66,8 @@ function Recepcion() {
   const loadAll = async () => {
     try {
       const [ordenesData, usuariosData] = await Promise.all([
-        fetchWithAuth("http://localhost:8080/api/ordenes/estado/recepcion"),
-        fetchWithAuth("http://localhost:8080/api/usuarios")
+        fetchWithAuth("/ordenes/estado/recepcion"),
+        fetchWithAuth("/usuarios")
       ]);
 
       setOrdenes(ordenesData || []);
@@ -87,7 +87,7 @@ function Recepcion() {
   useEffect(() => {
     if (form.id_cliente) {
       const filtrados = vehiculos.filter(v =>
-        (v.idCliente || v.id_cliente) == form.id_cliente
+        (v.idCliente || v.id_cliente) === form.id_cliente
       );
       setVehiculosFiltrados(filtrados);
     } else {

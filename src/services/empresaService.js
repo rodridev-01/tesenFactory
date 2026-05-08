@@ -1,28 +1,27 @@
-const API_URL = "http://localhost:8080/api/empresas";
+import { fetchWithAuth } from "./authService";
+
+const EMPRESAS_ENDPOINT = "/empresas";
 
 export const getEmpresas = async () => {
-  const res = await fetch(API_URL);
-  return res.json();
+  return await fetchWithAuth(EMPRESAS_ENDPOINT);
 };
 
 export const createEmpresa = async (empresa) => {
-  const res = await fetch(API_URL, {
+  return await fetchWithAuth(EMPRESAS_ENDPOINT, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(empresa),
+    body: empresa, 
   });
-  return res.json();
 };
 
 export const updateEmpresa = async (id, empresa) => {
-  const res = await fetch(`${API_URL}/${id}`, {
+  return await fetchWithAuth(`${EMPRESAS_ENDPOINT}/${id}`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(empresa),
+    body: empresa,
   });
-  return res.json();
 };
 
 export const deleteEmpresa = async (id) => {
-  await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+  return await fetchWithAuth(`${EMPRESAS_ENDPOINT}/${id}`, { 
+    method: "DELETE" 
+  });
 };

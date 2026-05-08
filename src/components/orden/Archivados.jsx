@@ -23,10 +23,10 @@ function Archivado() {
         vehiculosData,
         usuariosData
       ] = await Promise.all([
-        fetchWithAuth("http://localhost:8080/api/ordenes/estado/finalizado"),
-        fetchWithAuth("http://localhost:8080/api/clientes/taller/1"),
-        fetchWithAuth("http://localhost:8080/api/vehiculos"),
-        fetchWithAuth("http://localhost:8080/api/usuarios")
+        fetchWithAuth("/ordenes/estado/finalizado"),
+        fetchWithAuth("/clientes/taller/1"),
+        fetchWithAuth("/vehiculos"),
+        fetchWithAuth("/usuarios")
       ]);
 
       setOrdenes(ordenesData || []);
@@ -45,21 +45,21 @@ function Archivado() {
 
   const getClienteNombre = (id) => {
     const c = clientes.find(c =>
-      (c.idCliente || c.id_cliente) == id
+      (c.idCliente || c.id_cliente) === id
     );
     return c ? `${c.nombre} ${c.apellido}` : id;
   };
 
   const getVehiculoNombre = (id) => {
     const v = vehiculos.find(v =>
-      (v.idVehiculo || v.id_vehiculo) == id
+      (v.idVehiculo || v.id_vehiculo) === id
     );
     return v ? `${v.marcaNombre} ${v.modelo} - ${v.placa}` : id;
   };
 
   const getTecnicoNombre = (id) => {
     const t = usuarios.find(u =>
-      (u.idUsuario || u.id_usuario) == id
+      (u.idUsuario || u.id_usuario) === id
     );
     return t ? `${t.nombre} ${t.apellido}` : id;
   };

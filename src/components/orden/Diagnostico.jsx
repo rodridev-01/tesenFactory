@@ -38,12 +38,12 @@ function Diagnostico() {
         productosData,
         stockData
       ] = await Promise.all([
-        fetchWithAuth("http://localhost:8080/api/ordenes/estado/diagnostico"),
-        fetchWithAuth("http://localhost:8080/api/clientes/taller/1"),
-        fetchWithAuth("http://localhost:8080/api/vehiculos"),
-        fetchWithAuth("http://localhost:8080/api/usuarios"),
-        fetchWithAuth("http://localhost:8080/api/productos/taller/1"),
-        fetchWithAuth("http://localhost:8080/api/stock/almacen/1")
+        fetchWithAuth("/ordenes/estado/diagnostico"),
+        fetchWithAuth("/clientes/taller/1"),
+        fetchWithAuth("/vehiculos"),
+        fetchWithAuth("/usuarios"),
+        fetchWithAuth("/productos/taller/1"),
+        fetchWithAuth("/stock/almacen/1")
       ]);
 
       setOrdenes(ordenesData || []);
@@ -189,25 +189,25 @@ function Diagnostico() {
   };
 
   const getClienteNombre = (id) => {
-    const c = clientes.find(c => (c.idCliente || c.id_cliente) == id);
+    const c = clientes.find(c => (c.idCliente || c.id_cliente) === id);
     return c ? `${c.nombre} ${c.apellido}` : id;
   };
 
   const getVehiculoNombre = (id) => {
-    const v = vehiculos.find(v => (v.idVehiculo || v.id_vehiculo) == id);
+    const v = vehiculos.find(v => (v.idVehiculo || v.id_vehiculo) === id);
     return v ? `${v.marcaNombre} ${v.modelo} - ${v.placa}` : id;
   };
 
   const getTecnicoNombre = (id) => {
-    const t = usuarios.find(u => (u.idUsuario || u.id_usuario) == id);
+    const t = usuarios.find(u => (u.idUsuario || u.id_usuario) === id);
     return t ? `${t.nombre} ${t.apellido}` : id;
   };
 
   const getProducto = (id) =>
-    productos.find(p => (p.id_producto || p.idProducto) == id);
+    productos.find(p => (p.id_producto || p.idProducto) === id);
 
   const getStock = (idProducto) =>
-    stock.find(s => s.idProducto == idProducto);
+    stock.find(s => s.idProducto === idProducto);
 
   const renderOrdenContent = (orden, badgeStyle) => {
     const km = orden.kilometrajeEntrada || orden.kilometraje_entrada;

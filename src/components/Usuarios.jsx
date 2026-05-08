@@ -26,9 +26,9 @@ function Usuarios() {
     const loadAll = async () => {
         try {
             const [usuariosData, rolesData, talleresData] = await Promise.all([
-                fetchWithAuth("http://localhost:8080/api/usuarios"),
-                fetchWithAuth("http://localhost:8080/api/roles"),
-                fetchWithAuth("http://localhost:8080/api/talleres")
+                fetchWithAuth("/usuarios"),
+                fetchWithAuth("/roles"),
+                fetchWithAuth("/talleres")
             ]);
             setUsuarios(usuariosData);
             setRoles(rolesData);
@@ -44,15 +44,24 @@ function Usuarios() {
     };
 
     const handleSubmit = async () => {
-        if (!form.nombre || !form.username || !form.email || !form.idRol || !form.idTaller) return alert("Por favor complete los campos obligatorios.");
+        if (!form.nombre || !form.username || !form.email || !form.idRol || !form.idTaller) 
+            return alert("Por favor complete los campos obligatorios.");
+        
         try {
-            const url = editId ? `http://localhost:8080/api/usuarios/${editId}` : "http://localhost:8080/api/usuarios";
+            const endpoint = editId ? `/usuarios/${editId}` : "/usuarios";
             const method = editId ? "PUT" : "POST";
             const payload = { ...form, idRol: Number(form.idRol), idTaller: Number(form.idTaller) };
-            if (!form.password) delete payload.password; // No enviar pass vacía al editar
+            
+            if (!form.password) delete payload.password; 
 
-            await fetchWithAuth(url, { method: method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
-            setModalOpen(false); resetForm(); loadAll();
+            await fetchWithAuth(endpoint, { 
+                method: method, 
+                body: payload 
+            });
+
+            setModalOpen(false); 
+            resetForm(); 
+            loadAll();
             alert(editId ? "Usuario actualizado" : "Usuario creado");
         } catch (err) { alert("Error al guardar: " + err.message); }
     };
@@ -74,12 +83,15 @@ function Usuarios() {
         const id = user.idUsuario || user.id_usuario;
         if (!window.confirm(`¿${user.activo ? 'DESACTIVAR' : 'ACTIVAR'} al usuario ${user.username}?`)) return;
         try {
-            await fetchWithAuth(`http://localhost:8080/api/usuarios/${id}/toggle`, { method: "PATCH" });
+            // PATCH relativo
+            await fetchWithAuth(`/usuarios/${id}/toggle`, { method: "PATCH" });
             loadAll();
         } catch (err) { alert("Error: " + err.message); }
     };
 
-    const filteredData = usuarios.filter((u) => `${u.nombre} ${u.apellido} ${u.username} ${u.email}`.toLowerCase().includes(search.toLowerCase()));
+    const filteredData = usuarios.filter((u) => 
+        `${u.nombre} ${u.apellido} ${u.username} ${u.email}`.toLowerCase().includes(search.toLowerCase())
+    );
 
     // --- COLUMNAS ---
     const columns = [
@@ -90,8 +102,7 @@ function Usuarios() {
             name: "Rol",
             cell: row => {
                 const rId = row.idRol || row.id_rol;
-                const rName = roles.find(r => r.idRol === rId)?.nombre || rId;
-
+                const rName = roles.find(r => (r.idRol || r.id_rol) === rId)?.nombre || rId;
                 return <span style={{ background: '#2d2d30', color: '#cbd5e1', padding: '4px 10px', borderRadius: '15px', fontSize: '0.75rem', fontWeight: 'bold', border: '1px solid #475569' }}>{rName}</span>;
             }
         },
@@ -110,15 +121,12 @@ function Usuarios() {
 
     return (
         <div className="usuarios-container" style={{ padding: '20px', minHeight: '100%', background: '#151517' }}>
-
-            {/* BOTÓN SUPERIOR */}
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 20 }}>
                 <button className="btn-crear" onClick={() => { resetForm(); setModalOpen(true); }} style={{ marginTop: 0, width: 'auto', display: 'flex', alignItems: 'center', gap: '8px', background: '#ef4444', border: 'none', padding: '10px 20px', borderRadius: 6, color: 'white', fontWeight: 'bold', cursor: 'pointer' }}>
                     <FaPlus /> Agregar Usuario
                 </button>
             </div>
 
-            {/* TABLA CON FONDO GRIS NEUTRO */}
             <div className="table-card" style={{ background: '#1f1f22', border: '1px solid #2d2d30' }}>
                 <GlobalDataTable
                     columns={columns}
