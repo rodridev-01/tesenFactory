@@ -494,21 +494,26 @@ table.dataTable tbody td {
 .nav-item-custom:hover {
   background-color: #c53030;
 }
-
-/* CONTENEDOR PRINCIPAL */
 .steps-bar {
   display: flex;
-  width: 100%;
-  height: 60px;
+  width: calc(100% - 40px);
+  min-height: 60px;
   background-color: #1f1f23;
   border-radius: 12px;
-  overflow: hidden;
-  margin: 15px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  margin: 20px;
+  scrollbar-width: none;
+}
+
+.steps-bar::-webkit-scrollbar {
+  display: none;
 }
 
 /* CADA STEP */
 .step-item {
   flex: 1;
+  min-width: 140px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -519,6 +524,8 @@ table.dataTable tbody td {
   font-size: 13px;
   font-weight: 500;
   border-right: 1px solid #2a2a2e;
+  padding: 0 12px;
+  white-space: nowrap;
 }
 
 .step-item:last-child {
@@ -541,6 +548,7 @@ table.dataTable tbody td {
   padding: 4px 8px;
   border-radius: 6px;
   font-size: 12px;
+  flex-shrink: 0;
 }
 
 /* cuando está activo */
@@ -551,6 +559,46 @@ table.dataTable tbody td {
 
 .step-text {
   font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+  .steps-bar {
+    border-radius: 10px;
+  }
+
+  .step-item {
+    min-width: 110px;
+    font-size: 12px;
+    padding: 0 10px;
+  }
+
+  .step-text {
+    font-size: 12px;
+  }
+
+  .step-number {
+    padding: 3px 7px;
+    font-size: 11px;
+  }
+}
+
+/* EXTRA PEQUEÑO */
+@media (max-width: 480px) {
+  .step-item {
+    min-width: 80px;
+    flex-direction: column;
+    gap: 4px;
+    padding: 8px;
+  }
+
+  .step-text {
+    font-size: 11px;
+    text-align: center;
+    white-space: normal;
+  }
 }
 
 /* =========================================

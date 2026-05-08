@@ -28,7 +28,7 @@ function Vehiculos({ idTaller = 1 }) {
     placa: "",
     color: "",
     vin: "",
-    kilometraje: 0,
+    kilometraje: "",
     observaciones: "",
   };
 
@@ -50,10 +50,25 @@ function Vehiculos({ idTaller = 1 }) {
     resetForm();
     setModalOpen(false);
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await guardarVehiculo(form, editId);
-    closeModal();
+
+    try {
+
+      await guardarVehiculo(form, editId);
+
+      closeModal();
+
+    } catch (error) {
+
+      console.log(error);
+
+      alert(
+        error?.message ||
+        "Error al guardar vehículo"
+      );
+    }
   };
 
   const handleEdit = (vehiculo) => {

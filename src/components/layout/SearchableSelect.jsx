@@ -89,26 +89,28 @@ export default function SearchableSelect({
           />
         </div>
 
-        <button
-          type="button"
-          onClick={onAddNew}
-          style={{
-            padding: "0 14px",
-            height: 42,
-            borderRadius: 8,
-            border: "1px solid #2d2d30",
-            background: "#ef4444",
-            color: "white",
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            gap: 6,
-            whiteSpace: "nowrap"
-          }}
-        >
-          <FaPlus />
-          {addLabel}
-        </button>
+        {onAddNew && (
+          <button
+            type="button"
+            onClick={onAddNew}
+            style={{
+              padding: "0 14px",
+              height: 42,
+              borderRadius: 8,
+              border: "1px solid #2d2d30",
+              background: "#ef4444",
+              color: "white",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: 6,
+              whiteSpace: "nowrap"
+            }}
+          >
+            <FaPlus />
+            {addLabel}
+          </button>
+        )}
       </div>
 
       {/* DROPDOWN */}

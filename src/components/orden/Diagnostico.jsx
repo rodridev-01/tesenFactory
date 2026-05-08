@@ -239,12 +239,15 @@ function Diagnostico() {
           {orden.danosVisuales || orden.danos_visuales || "-"}
         </div>
         <div>
+          <strong>Diagnóstico:</strong> {orden.diagnostico || "Sin diagnóstico"}
+        </div>
+        <div>
           <strong>Fecha Ingreso:</strong>{" "}
           {orden.fecha_ingreso
             ? new Date(orden.fecha_ingreso).toLocaleString("es-PE", {
-                dateStyle: "short",
-                timeStyle: "short"
-              })
+              dateStyle: "short",
+              timeStyle: "short"
+            })
             : "-"}
         </div>
       </>
@@ -284,20 +287,20 @@ function Diagnostico() {
         renderContent={renderOrdenContent}
         buttonConfig={{
           prev: true,
-          print: true,
-          edit: false,
+          print: false,
+          edit: true,
           diagnostic: false,
           details: true,
-          delete: false,
-          comments: true,
+          delete: true,
+          comments: false,
           view: true,
           next: true,
         }}
         buttonActions={{
           prev: (orden) => console.log("Anterior", orden),
-          print: (orden) => console.log("Imprimir", orden),
+          edit: (orden) => console.log("Imprimir", orden),
           details: openModal,
-          comments: (orden) => console.log("Comentarios", orden),
+          delete: (orden) => console.log("Eliminar", orden),
           view: (orden) => console.log("Visualizar", orden),
           next: (orden) => console.log("Siguiente", orden),
         }}

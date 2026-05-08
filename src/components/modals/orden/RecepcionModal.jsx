@@ -107,6 +107,7 @@ const RecepcionModal = ({
             <SearchableSelect
               label="Cliente *"
               placeholder="Buscar cliente..."
+              required
               items={clientes}
               value={form.id_cliente}
               onChange={(value) =>
@@ -139,6 +140,7 @@ const RecepcionModal = ({
                 console.log("cliente actual:", form.id_cliente);
               }}
               addLabel=""
+              required
             />
 
             <SearchableSelect
@@ -151,6 +153,7 @@ const RecepcionModal = ({
               }
               getOptionLabel={(t) => `${t.nombre} ${t.apellido}`}
               getOptionValue={(t) => t.idUsuario || t.id_usuario}
+              required
             />
 
             <div
@@ -169,7 +172,8 @@ const RecepcionModal = ({
                     placeholder="Ej. 50000"
                     value={form.kilometrajeEntrada || ""}
                     onChange={handleChange}
-                    style={styledInput}
+                    style={styledInput} 
+                    required
                   />
                 </div>
               </div>
@@ -183,6 +187,7 @@ const RecepcionModal = ({
                     value={form.nivelCombustible || ""}
                     onChange={handleChange}
                     style={styledInput}
+                    required
                   >
                     <option value="" disabled>Nivel de combustible</option>
                     <option value="Vacío">Vacío (E)</option>
@@ -205,6 +210,7 @@ const RecepcionModal = ({
                   value={form.motivoIngreso || ""}
                   onChange={handleChange}
                   style={styledInput}
+                  required
                 />
               </div>
             </div>
@@ -219,6 +225,7 @@ const RecepcionModal = ({
                   value={form.danosVisuales || ""}
                   onChange={handleChange}
                   style={styledInput}
+                  required
                 />
               </div>
             </div>

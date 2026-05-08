@@ -63,6 +63,7 @@ export const useVehiculos = (idTaller = 1) => {
   };
 
   const guardarVehiculo = async (form, editId) => {
+
     const payload = {
       idCliente: Number(form.idCliente),
       idMarca: Number(form.idMarca),
@@ -71,22 +72,29 @@ export const useVehiculos = (idTaller = 1) => {
       tipo: "Moto",
       placa: form.placa?.toUpperCase().trim(),
       color: form.color,
-      vin: form.vin?.toUpperCase().trim(), 
+      vin: form.vin?.toUpperCase().trim(),
       kilometraje: Number(form.kilometraje),
       observaciones: `[Sistema: ${form.sistema}] ${form.observaciones || ""}`.trim(),
     };
 
-    let response;
+    try {
 
-    if (editId) {
-      response = await updateVehiculo(editId, payload);
-    } else {
-      response = await createVehiculo(payload);
+      let response;
+
+      if (editId) {
+        response = await updateVehiculo(editId, payload);
+      } else {
+        response = await createVehiculo(payload);
+      }
+
+      await cargarDatos();
+
+      return response;
+
+    } catch (error) {
+
+      throw error;
     }
-
-    await cargarDatos();
-
-    return response;
   };
 
   const cambiarEstadoVehiculo = async (id) => {

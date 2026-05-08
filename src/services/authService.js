@@ -18,7 +18,7 @@ export const isAccessTokenValid = () => {
   const payload = parseJwt(token);
   if (!payload || !payload.exp) return false;
 
-  return payload.exp * 1000 > Date.now(); 
+  return payload.exp * 1000 > Date.now();
 };
 
 export const login = async (usernameOrEmail, password) => {
@@ -100,15 +100,19 @@ export const fetchWithAuth = async (url, options = {}) => {
 
   const res = await fetch(url, finalOptions);
 
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(text || "Error en la petición");
-  }
-
   const contentType = res.headers.get("content-type");
+
+  let data = null;
+
   if (contentType && contentType.includes("application/json")) {
-    return res.json();
+    data = await res.json();
+  } else {
+    data = await res.text();
   }
 
-  return null;
+  if (!res.ok) {
+    throw data;
+  }
+
+  return data;
 };

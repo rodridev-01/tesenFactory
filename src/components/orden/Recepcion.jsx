@@ -115,8 +115,20 @@ function Recepcion() {
   const handleSave = async (e) => {
     e.preventDefault();
 
-    if (!form.id_cliente || !form.id_vehiculo) {
-      return alert("Cliente y Vehículo son obligatorios");
+    const camposFaltantes = [];
+
+    if (!form.id_cliente) camposFaltantes.push("Cliente");
+    if (!form.id_vehiculo) camposFaltantes.push("Vehículo");
+    if (!form.id_tecnico) camposFaltantes.push("Técnico");
+    if (!form.kilometrajeEntrada) camposFaltantes.push("Kilometraje");
+    if (!form.nivelCombustible) camposFaltantes.push("Nivel de combustible");
+    if (!form.motivoIngreso) camposFaltantes.push("Motivo de ingreso");
+    if (!form.danosVisuales) camposFaltantes.push("Daños visuales");
+
+    if (camposFaltantes.length > 0) {
+      return alert(
+        `Campos obligatorios: ${camposFaltantes.join(", ")}`
+      );
     }
 
     try {
@@ -126,21 +138,24 @@ function Recepcion() {
           {
             method: "PUT",
             headers: {
-              "Content-Type": "application/json"
+              "Content-Type": "application/json",
             },
-            body: JSON.stringify(form)
+            body: JSON.stringify(form),
           }
         );
 
         alert("Recepción actualizada");
       } else {
-        await fetchWithAuth("http://localhost:8080/api/ordenes/recepcion", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(form)
-        });
+        await fetchWithAuth(
+          "http://localhost:8080/api/ordenes/recepcion",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(form),
+          }
+        );
 
         alert("Recepción creada");
       }
@@ -150,7 +165,6 @@ function Recepcion() {
       setOrdenEditandoId(null);
       clearForm();
       loadAll();
-
     } catch (err) {
       alert("Error: " + err.message);
     }
@@ -278,7 +292,12 @@ function Recepcion() {
       {/* BOTÓN */}
       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 20 }}>
         <button
-          onClick={() => { clearForm(); setModalOpen(true); }}
+          onClick={() => {
+            clearForm();
+            setModoEdicion(false);
+            setOrdenEditandoId(null);
+            setModalOpen(true);
+          }}
           style={{
             display: "flex",
             alignItems: "center",
@@ -302,22 +321,20 @@ function Recepcion() {
         renderContent={renderOrdenContent}
         buttonConfig={{
           prev: false,
-          print: true,
+          print: false,
           edit: true,
           diagnostic: true,
           details: true,
           delete: true,
-          comments: true,
+          comments: false,
           view: true,
           next: true,
         }}
         buttonActions={{
-          print: (orden) => console.log("Imprimir", orden),
           edit: abrirEditar,
           diagnostic: abrirDiagnostico,
           details: (orden) => console.log("Detalles", orden),
           delete: (orden) => console.log("Eliminar", orden),
-          comments: (orden) => console.log("Comentarios", orden),
           view: (orden) => console.log("Visualizar", orden),
           next: (orden) => console.log("Siguiente", orden),
         }}
@@ -362,7 +379,6 @@ function Recepcion() {
 
           if (nuevoCliente) {
             setModalCliente(false);
-            setClientes(prev => [...prev, nuevoCliente]);
             setForm(prev => ({
               ...prev,
               id_cliente: nuevoCliente.idCliente || nuevoCliente.id_cliente
@@ -381,13 +397,25 @@ function Recepcion() {
         handleChange={handleVehiculoChange}
         handleSubmit={async (e) => {
           e.preventDefault();
-          const nuevoVehiculo = await guardarVehiculo(vehiculoForm);
-          setModalVehiculo(false);
-          await loadAll();
-          setForm(prev => ({
-            ...prev,
-            id_vehiculo: nuevoVehiculo?.idVehiculo || nuevoVehiculo?.id_vehiculo
-          }));
+          try {
+            const nuevoVehiculo = await guardarVehiculo({
+              ...vehiculoForm,
+              idCliente: form.id_cliente,
+            });
+            setModalVehiculo(false);
+            await loadAll();
+            setForm(prev => ({
+              ...prev,
+              id_vehiculo:
+                nuevoVehiculo?.idVehiculo ||
+                nuevoVehiculo?.id_vehiculo
+            }));
+          } catch (err) {
+            alert(
+              err.message ||
+              "Error al registrar vehículo"
+            );
+          }
         }}
         clientes={clientes}
         marcas={marcas}
