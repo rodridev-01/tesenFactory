@@ -37,10 +37,10 @@ function Dashboard() {
     const loadData = async () => {
       try {
         const [vehiculosData, clientesData, productosData, stockData] = await Promise.all([
-          fetchWithAuth("http://localhost:8080/api/vehiculos"),
-          fetchWithAuth("http://localhost:8080/api/clientes"),
-          fetchWithAuth("http://localhost:8080/api/productos/taller/1"),
-          fetchWithAuth("http://localhost:8080/api/stock/almacen/1")
+          fetchWithAuth("/vehiculos"),
+          fetchWithAuth("/clientes"),
+          fetchWithAuth("/productos/taller/1"),
+          fetchWithAuth("/stock/almacen/1")
         ]);
 
         setVehiculos(vehiculosData || []);
