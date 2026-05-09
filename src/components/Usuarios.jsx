@@ -54,8 +54,11 @@ function Usuarios() {
             
             if (!form.password) delete payload.password; 
 
-            await fetchWithAuth(endpoint, { 
-                method: method, 
+            await fetchWithAuth(endpoint, {
+                method: method,
+                headers: {
+                    "Content-Type": "application/json"
+                },
                 body: JSON.stringify(payload)
             });
 
