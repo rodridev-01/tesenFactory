@@ -1,22 +1,24 @@
-import BASE_URL, { API_URL } from '../config';
+import BASE_URL, { API_URL } from "../config";
 
 // Parse JWT
 const parseJwt = (token) => {
   if (!token) return null;
+
   try {
-    const payload = JSON.parse(atob(token.split(".")[1]));
-    return payload;
-  } catch (e) {
+    return JSON.parse(atob(token.split(".")[1]));
+  } catch {
     return null;
   }
 };
 
 export const isAccessTokenValid = () => {
   const token = localStorage.getItem("accessToken");
+
   if (!token) return false;
 
   const payload = parseJwt(token);
-  if (!payload || !payload.exp) return false;
+
+  if (!payload?.exp) return false;
 
   return payload.exp * 1000 > Date.now();
 };
@@ -24,16 +26,21 @@ export const isAccessTokenValid = () => {
 export const login = async (usernameOrEmail, password) => {
   const res = await fetch(`${API_URL}/login`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ usernameOrEmail, password }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      usernameOrEmail,
+      password,
+    }),
   });
 
   if (!res.ok) {
-    const text = await res.text();
-    throw new Error(text);
+    throw new Error(await res.text());
   }
 
   const data = await res.json();
+
   localStorage.setItem("accessToken", data.accessToken);
   localStorage.setItem("refreshToken", data.refreshToken);
   localStorage.setItem("username", data.username);
@@ -41,35 +48,46 @@ export const login = async (usernameOrEmail, password) => {
   return data;
 };
 
-// Refrescar Access Token
 export const refreshAccessToken = async () => {
   const refreshToken = localStorage.getItem("refreshToken");
-  if (!refreshToken) throw new Error("No hay refresh token");
+
+  if (!refreshToken) {
+    throw new Error("No hay refresh token");
+  }
 
   const res = await fetch(`${API_URL}/refresh`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify({ refreshToken }),
   });
 
-  if (!res.ok) throw new Error("Refresh token inválido");
+  if (!res.ok) {
+    throw new Error("Refresh token inválido");
+  }
 
   const data = await res.json();
+
   localStorage.setItem("accessToken", data.accessToken);
+
   return data.accessToken;
 };
 
-// Logout
 export const logout = async () => {
   const refreshToken = localStorage.getItem("refreshToken");
 
-  if (refreshToken) {
-    await fetch(`${API_URL}/logout`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ refreshToken }),
-    });
-  }
+  try {
+    if (refreshToken) {
+      await fetch(`${API_URL}/logout`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ refreshToken }),
+      });
+    }
+  } catch {}
 
   localStorage.removeItem("accessToken");
   localStorage.removeItem("refreshToken");
@@ -79,57 +97,39 @@ export const logout = async () => {
 export const fetchWithAuth = async (url, options = {}) => {
   let token = localStorage.getItem("accessToken");
 
-  const finalUrl = url.startsWith("http")
-    ? url
-    : `${BASE_URL}${url}`;
-
   if (!isAccessTokenValid()) {
     try {
       token = await refreshAccessToken();
-    } catch (err) {
+    } catch {
       await logout();
-      throw new Error("Sesión expirada. Vuelva a iniciar sesión.");
+      throw new Error("Sesión expirada");
     }
   }
+
+  const finalUrl = url.startsWith("http")
+    ? url
+    : `${BASE_URL}${url.startsWith("/") ? "" : "/"}${url}`;
 
   const finalOptions = {
-    method: options.method || "GET",
+    ...options,
     headers: {
-      "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
-      ...(options.headers || {})
-    }
+      ...(options.headers || {}),
+    },
   };
 
-  if (options.body) {
-    finalOptions.body = JSON.stringify(options.body);
-  }
+  const res = await fetch(finalUrl, finalOptions);
 
-  let res;
-
-  try {
-    res = await fetch(finalUrl, finalOptions);
-  } catch (err) {
-    throw new Error("Error de conexión con el servidor");
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(text || "Error en la petición");
   }
 
   const contentType = res.headers.get("content-type");
 
-  let data;
-
   if (contentType?.includes("application/json")) {
-    data = await res.json();
-  } else {
-    data = await res.text();
+    return await res.json();
   }
 
-  if (!res.ok) {
-    throw new Error(
-      typeof data === "string"
-        ? data
-        : JSON.stringify(data)
-    );
-  }
-
-  return data ?? null;
+  return await res.text();
 };
