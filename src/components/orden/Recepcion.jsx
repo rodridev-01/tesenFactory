@@ -147,7 +147,7 @@ function Recepcion() {
         alert("Recepción actualizada");
       } else {
         await fetchWithAuth(
-          "/api/ordenes/recepcion",
+          "/ordenes/recepcion",
           {
             method: "POST",
             headers: {
@@ -190,7 +190,7 @@ function Recepcion() {
     e.preventDefault();
 
     try {
-      await fetchWithAuth("/api/ordenes/diagnostico", {
+      await fetchWithAuth("/ordenes/diagnostico", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

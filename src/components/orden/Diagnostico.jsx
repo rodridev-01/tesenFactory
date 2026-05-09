@@ -163,7 +163,7 @@ function Diagnostico() {
       }
 
       for (const d of detalles) {
-        await fetchWithAuth("http://localhost:8080/api/ordenes/detalle", {
+        await fetchWithAuth("/ordenes/detalle", {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
