@@ -52,13 +52,16 @@ function Servicios() {
     try {
       await fetchWithAuth("/productos", {
         method: "POST",
-        body: {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
           id_taller: idTallerFijo,
           tipo: "SERVICIO",
           nombre: formData.nombre,
           precio_venta: Number(formData.precioVenta),
           activo: true,
-        },
+        }),
       });
 
       setModalOpen(false);
