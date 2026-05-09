@@ -107,7 +107,7 @@ const defaultButtons = [
   { key: "next", icon: <FaChevronRight />, title: "Siguiente" },
 ];
 
-const OrderCard = ({
+const OrdenCard = ({
   title = "Lista de Registros",
   data = [],
   renderContent,
@@ -163,4 +163,4 @@ const OrderCard = ({
   );
 };
 
-export default OrderCard;
+export default OrdenCard;
