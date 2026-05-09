@@ -71,19 +71,19 @@ function Servicios() {
 
   const handleUpdate = async () => {
     try {
-      await fetchWithAuth(
-        `/productos/${editingId}`,
-        {
-          method: "PUT",
-          body: {
-            id_taller: idTallerFijo,
-            tipo: "SERVICIO",
-            nombre: formData.nombre,
-            precio_venta: Number(formData.precioVenta),
-            activo: formData.activo,
-          },
-        }
-      );
+      await fetchWithAuth("/productos", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id_taller: idTallerFijo,
+          tipo: "SERVICIO",
+          nombre: formData.nombre,
+          precio_venta: Number(formData.precioVenta),
+          activo: true,
+        }),
+      });
 
       setModalOpen(false);
       clearForm();

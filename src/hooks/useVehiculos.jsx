@@ -37,15 +37,17 @@ export const useVehiculos = (idTaller = 1) => {
   const cargarDatos = useCallback(async () => {
     try {
       setLoading(true);
-      const [vehiculosData, clientesData, marcasData] = await Promise.all([
-        getVehiculos(),
-        getClientesPorTaller(idTaller),
-        getMarcas(),
-      ]);
+
+      const vehiculosData = await getVehiculos();
+      const clientesData = await getClientesPorTaller(idTaller);
+      const marcasData = await getMarcas();
 
       setVehiculos(vehiculosData || []);
       setClientes(clientesData || []);
       setMarcas(marcasData || []);
+
+    } catch (err) {
+      console.error("Error cargando datos:", err);
     } finally {
       setLoading(false);
     }

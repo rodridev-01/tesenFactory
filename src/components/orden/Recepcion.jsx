@@ -134,7 +134,7 @@ function Recepcion() {
     try {
       if (modoEdicion) {
         await fetchWithAuth(
-          `http://localhost:8080/api/ordenes/recepcion/${ordenEditandoId}`,
+          `/ordenes/recepcion/${ordenEditandoId}`,
           {
             method: "PUT",
             headers: {
@@ -147,7 +147,7 @@ function Recepcion() {
         alert("Recepción actualizada");
       } else {
         await fetchWithAuth(
-          "http://localhost:8080/api/ordenes/recepcion",
+          "/api/ordenes/recepcion",
           {
             method: "POST",
             headers: {
@@ -190,7 +190,7 @@ function Recepcion() {
     e.preventDefault();
 
     try {
-      await fetchWithAuth("http://localhost:8080/api/ordenes/diagnostico", {
+      await fetchWithAuth("/api/ordenes/diagnostico", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

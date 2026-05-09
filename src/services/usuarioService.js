@@ -1,17 +1,31 @@
 import { fetchWithAuth } from "./authService";
 
-const USUARIOS_ENDPOINT = "/usuarios";
-const ROLES_ENDPOINT = "/roles";
-const TALLERES_ENDPOINT = "/talleres";
+const VEHICULOS_ENDPOINT = "/vehiculos";
+const CLIENTES_ENDPOINT = "/clientes";
+const MARCAS_ENDPOINT = "/marcas";
 
-export const getUsuarios = async () => {
-  return await fetchWithAuth(USUARIOS_ENDPOINT);
-};
+export const getVehiculos = () =>
+  fetchWithAuth(VEHICULOS_ENDPOINT);
 
-export const getRoles = async () => {
-  return await fetchWithAuth(ROLES_ENDPOINT);
-};
+export const getClientesPorTaller = (idTaller) =>
+  fetchWithAuth(`${CLIENTES_ENDPOINT}/taller/${idTaller}`);
 
-export const getTalleres = async () => {
-  return await fetchWithAuth(TALLERES_ENDPOINT);
-};
+export const getMarcas = () =>
+  fetchWithAuth(MARCAS_ENDPOINT);
+
+export const createVehiculo = (vehiculo) =>
+  fetchWithAuth(VEHICULOS_ENDPOINT, {
+    method: "POST",
+    body: JSON.stringify(vehiculo),
+  });
+
+export const updateVehiculo = (id, vehiculo) =>
+  fetchWithAuth(`${VEHICULOS_ENDPOINT}/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(vehiculo),
+  });
+
+export const toggleVehiculo = (id) =>
+  fetchWithAuth(`${VEHICULOS_ENDPOINT}/${id}/toggle`, {
+    method: "PUT",
+  });

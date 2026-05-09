@@ -13,7 +13,7 @@ export async function getStockPorProducto(idProducto) {
 export async function crearOActualizarStock(stock) {
   return await fetchWithAuth(STOCK_ENDPOINT, {
     method: "POST",
-    body: stock 
+    body: JSON.stringify(stock)
   });
 }
 

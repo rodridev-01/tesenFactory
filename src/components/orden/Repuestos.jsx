@@ -46,14 +46,14 @@ function Repuesto() {
   };
 
   const loadDetalles = async (idOrden) => {
-    const data = await fetchWithAuth(`http://localhost:8080/api/ordenes/${idOrden}/detalles`);
+    const data = await fetchWithAuth(`/ordenes/${idOrden}/detalles`);
     setDetalles(data || []);
   };
 
   const loadExtras = async () => {
     const [prod, stk] = await Promise.all([
-      fetchWithAuth("http://localhost:8080/api/productos/taller/1"),
-      fetchWithAuth("http://localhost:8080/api/stock/almacen/1")
+      fetchWithAuth("/productos/taller/1"),
+      fetchWithAuth("/stock/almacen/1")
     ]);
 
     setProductos(prod || []);

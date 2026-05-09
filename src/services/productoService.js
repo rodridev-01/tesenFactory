@@ -13,19 +13,19 @@ export async function getProducto(id) {
 export async function createProducto(producto) {
   return await fetchWithAuth(PRODUCTOS_ENDPOINT, {
     method: "POST",
-    body: producto 
+    body: JSON.stringify(producto)
   });
 }
 
 export async function updateProducto(id, producto) {
   return await fetchWithAuth(`${PRODUCTOS_ENDPOINT}/${id}`, {
     method: "PUT",
-    body: producto
+    body: JSON.stringify(producto)
   });
 }
 
 export async function deleteProducto(id) {
-  return await fetchWithAuth(`${PRODUCTOS_ENDPOINT}/${id}`, { 
-    method: "DELETE" 
+  return await fetchWithAuth(`${PRODUCTOS_ENDPOINT}/${id}`, {
+    method: "DELETE"
   });
 }

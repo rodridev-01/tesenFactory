@@ -53,7 +53,7 @@ function Stock() {
 
       await fetchWithAuth("/stock", {
         method: "POST", 
-        body: payload,
+        body: JSON.stringify(payload),
       });
 
       await loadAll(); clearForm(); setModalOpen(false);

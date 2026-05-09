@@ -56,7 +56,7 @@ function Usuarios() {
 
             await fetchWithAuth(endpoint, { 
                 method: method, 
-                body: payload 
+                body: JSON.stringify(payload)
             });
 
             setModalOpen(false); 
