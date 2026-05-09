@@ -71,8 +71,8 @@ function Servicios() {
 
   const handleUpdate = async () => {
     try {
-      await fetchWithAuth("/productos", {
-        method: "POST",
+      await fetchWithAuth(`/productos/${editingId}`, {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
