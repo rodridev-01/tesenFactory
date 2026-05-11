@@ -116,29 +116,38 @@ const DiagnosticoModal = ({
 
             <div>
               <label style={labelStyle}>Técnico Responsable</label>
+
               <div style={inputContainer}>
                 <FaUserCog style={iconInInput} />
-                <select
-                  name="creadoPor"
-                  value={diagnosticoForm.creadoPor}
-                  onChange={handleDiagnosticoChange}
-                  required
+
+                <input
+                  type="text"
+                  disabled
+                  value={
+                    tecnicos.find(
+                      (t) =>
+                        Number(t.idUsuario || t.id_usuario) ===
+                        Number(diagnosticoForm.creadoPor)
+                    )
+                      ? `${tecnicos.find(
+                          (t) =>
+                            Number(t.idUsuario || t.id_usuario) ===
+                            Number(diagnosticoForm.creadoPor)
+                        ).nombre} ${
+                          tecnicos.find(
+                            (t) =>
+                              Number(t.idUsuario || t.id_usuario) ===
+                              Number(diagnosticoForm.creadoPor)
+                          ).apellido
+                        }`
+                      : ""
+                  }
                   style={{
                     ...inputStyled,
-                    appearance: "none",
-                    cursor: "pointer",
+                    background: "#0f0f11",
+                    cursor: "not-allowed",
                   }}
-                >
-                  <option value="">Seleccione técnico...</option>
-                  {tecnicos.map((t) => (
-                    <option
-                      key={t.idUsuario || t.id_usuario}
-                      value={t.idUsuario || t.id_usuario}
-                    >
-                      {t.nombre} {t.apellido}
-                    </option>
-                  ))}
-                </select>
+                />
               </div>
             </div>
 

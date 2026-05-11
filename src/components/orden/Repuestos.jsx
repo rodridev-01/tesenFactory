@@ -50,6 +50,10 @@ function Repuesto() {
     setDetalles(data || []);
   };
 
+  const repuestos = productos.filter(
+    (p) => p.tipo !== "SERVICIO"
+  );
+
   const loadExtras = async () => {
     const [prod, stk] = await Promise.all([
       fetchWithAuth("/productos/taller/1"),
@@ -68,12 +72,15 @@ function Repuesto() {
   };
 
   const getProducto = (id) =>
-    productos.find(p => (p.id_producto || p.idProducto) === id);
+    productos.find(
+      p => Number(p.id_producto || p.idProducto) === Number(id)
+    );
 
   const getStock = (idProducto) =>
-    stock.find(s => s.idProducto === idProducto);
+    stock.find(
+      s => Number(s.idProducto || s.id_producto) === Number(idProducto)
+    );
 
-  // 🔥 APROBAR
   const aprobarDetalle = async (id) => {
     await fetchWithAuth(`/ordenes/detalle/${id}/aprobar`, {
       method: "PUT"
@@ -216,22 +223,36 @@ function Repuesto() {
         setShowModal={setShowModal}
         ordenSeleccionada={ordenSeleccionada}
         detalles={detalles}
-        productos={productos}
+        productos={repuestos}
         nuevoDetalle={nuevoDetalle}
         setNuevoDetalle={setNuevoDetalle}
         agregarDetalle={agregarDetalle}
         aprobarDetalle={aprobarDetalle}
         aprobarOrden={async () => {
-          await fetchWithAuth(
-            `/ordenes/${ordenSeleccionada.id_orden}/aprobar`,
-            {
-              method: "PUT",
-            }
-          );
+          try {
+            await fetchWithAuth(
+              `/ordenes/${ordenSeleccionada.id_orden}/aprobar`,
+              {
+                method: "PUT",
+              }
+            );
 
-          alert("Orden aprobada");
-          setShowModal(false);
-          loadOrdenes();
+            alert("Orden aprobada");
+            setShowModal(false);
+            loadOrdenes();
+
+          } catch (err) {
+            console.error(err);
+
+            if (
+              typeof err.message === "string" &&
+              err.message.includes("Faltan aprobar detalles")
+            ) {
+              alert("Debes aprobar todos los repuestos antes de continuar");
+            } else {
+              alert("No se pudo aprobar la orden");
+            }
+          }
         }}
       />
 

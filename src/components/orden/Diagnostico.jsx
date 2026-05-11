@@ -126,16 +126,15 @@ function Diagnostico() {
 
   const handleProductoChange = (index, productId) => {
     const producto = getProducto(productId);
+
+    console.log(producto);
+
     const newData = [...detalles];
 
     newData[index].idProducto = productId;
     newData[index].descripcion = producto?.nombre || "";
     newData[index].precio =
       producto?.precio_venta || producto?.precioVenta || 0;
-
-    if (producto?.tipo === "SERVICIO") {
-      newData[index].cantidad = 1;
-    }
 
     setDetalles(newData);
   };
@@ -204,10 +203,15 @@ function Diagnostico() {
   };
 
   const getProducto = (id) =>
-    productos.find(p => (p.id_producto || p.idProducto) === id);
+    productos.find(
+      p => Number(p.id_producto || p.idProducto) === Number(id)
+  );
 
   const getStock = (idProducto) =>
-    stock.find(s => s.idProducto === idProducto);
+    stock.find(
+      s =>
+        Number(s.idProducto || s.id_producto) === Number(idProducto)
+  );
 
   const renderOrdenContent = (orden, badgeStyle) => {
     const km = orden.kilometrajeEntrada || orden.kilometraje_entrada;
