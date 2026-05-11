@@ -1,19 +1,20 @@
 import React from "react";
-import { FaTimes, FaPlus, FaSave, FaCheck, FaCogs, FaBox } from "react-icons/fa";
+import {
+  FaSave,
+  FaTimes,
+  FaStethoscope,
+  FaUserCog,
+} from "react-icons/fa";
 
-function DiagnosticoModal({
-  showModal,
-  setShowModal,
-  ordenSeleccionada,
-  detalles,
-  productos,
-  nuevoDetalle,
-  setNuevoDetalle,
-  agregarDetalle,
-  aprobarDetalle,
-  aprobarOrden,
-}) {
-  if (!showModal) return null;
+const DiagnosticoModal = ({
+  modalDiagnostico,
+  setModalDiagnostico,
+  guardarDiagnostico,
+  diagnosticoForm,
+  handleDiagnosticoChange,
+  tecnicos,
+}) => {
+  if (!modalDiagnostico) return null;
 
   const labelStyle = {
     display: "block",
@@ -46,26 +47,24 @@ function DiagnosticoModal({
     fontSize: "0.9rem",
     background: "#151517",
     color: "#f1f5f9",
+    resize: "vertical",
   };
 
-  const totalGeneral = detalles.reduce((acc, d) => acc + (d.total || 0), 0);
-
   return (
-    <div className="modal-overlay" onClick={() => setShowModal(false)}>
+    <div className="modal-overlay" onClick={() => setModalDiagnostico(false)}>
       <div
-        onClick={(e) => e.stopPropagation()}
+        className="modal-content"
         style={{
-          width: "650px",
+          width: "500px",
           background: "#1f1f22",
           border: "1px solid #2d2d30",
-          borderRadius: "10px",
-          overflow: "hidden",
+          padding: 0,
         }}
+        onClick={(e) => e.stopPropagation()}
       >
-        {/* HEADER */}
         <div
           style={{
-            padding: "18px 20px",
+            padding: "20px 30px",
             borderBottom: "1px solid #2d2d30",
             display: "flex",
             justifyContent: "space-between",
@@ -73,17 +72,24 @@ function DiagnosticoModal({
             background: "#151517",
           }}
         >
-          <h3 style={{ margin: 0, color: "#f1f5f9" }}>
-            Orden #{ordenSeleccionada?.id_orden}
-          </h3>
+          <h2
+            style={{
+              margin: 0,
+              color: "#f1f5f9",
+              fontSize: "1.3rem",
+            }}
+          >
+            Registrar Diagnóstico
+          </h2>
 
           <button
-            onClick={() => setShowModal(false)}
+            type="button"
+            onClick={() => setModalDiagnostico(false)}
             style={{
               background: "transparent",
               border: "none",
-              color: "#9ca3af",
               fontSize: "1.2rem",
+              color: "#9ca3af",
               cursor: "pointer",
             }}
           >
@@ -91,181 +97,99 @@ function DiagnosticoModal({
           </button>
         </div>
 
-        <div style={{ padding: "25px" }}>
+        <form onSubmit={guardarDiagnostico}>
+          <div style={{ padding: "30px", display: "grid", gap: 18 }}>
+            <div>
+              <label style={labelStyle}>Diagnóstico</label>
+              <div style={inputContainer}>
+                <FaStethoscope style={iconInInput} />
+                <textarea
+                  name="diagnostico"
+                  value={diagnosticoForm.diagnostico}
+                  onChange={handleDiagnosticoChange}
+                  required
+                  placeholder="Describe el diagnóstico del vehículo..."
+                  style={{ ...inputStyled, minHeight: 120, paddingTop: "12px" }}
+                />
+              </div>
+            </div>
 
-          {/* ================= SERVICIOS ================= */}
-          <label style={labelStyle}>Servicios aprobados</label>
-
-          <div style={{ display: "grid", gap: 10 }}>
-            {detalles.map((d, i) => (
-              <div
-                key={i}
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 80px 80px 60px",
-                  gap: 10,
-                  alignItems: "center",
-                  padding: "10px",
-                  border: "1px solid #2d2d30",
-                  borderRadius: "8px",
-                }}
-              >
-                <div style={{ color: "#f1f5f9" }}>{d.descripcion}</div>
-
-                <div style={{ color: "#94a3b8" }}>x{d.cantidad}</div>
-
-                <div style={{ color: "#94a3b8" }}>
-                  S/ {Number(d.precioUnitario).toFixed(2)}
-                </div>
-
-                <button
-                  onClick={() => aprobarDetalle(d.id)}
-                  disabled={d.aprobado}
+            <div>
+              <label style={labelStyle}>Técnico Responsable</label>
+              <div style={inputContainer}>
+                <FaUserCog style={iconInInput} />
+                <select
+                  name="creadoPor"
+                  value={diagnosticoForm.creadoPor}
+                  onChange={handleDiagnosticoChange}
+                  required
                   style={{
-                    background: d.aprobado ? "#475569" : "#22c55e",
-                    border: "none",
-                    color: "white",
-                    borderRadius: "6px",
-                    cursor: d.aprobado ? "not-allowed" : "pointer",
-                    height: "36px",
+                    ...inputStyled,
+                    appearance: "none",
+                    cursor: "pointer",
                   }}
                 >
-                  <FaCheck />
-                </button>
+                  <option value="">Seleccione técnico...</option>
+                  {tecnicos.map((t) => (
+                    <option
+                      key={t.idUsuario || t.id_usuario}
+                      value={t.idUsuario || t.id_usuario}
+                    >
+                      {t.nombre} {t.apellido}
+                    </option>
+                  ))}
+                </select>
               </div>
-            ))}
-          </div>
+            </div>
 
-          {/* ================= AGREGAR REPUESTO ================= */}
-          <label style={{ ...labelStyle, marginTop: 20 }}>
-            Agregar repuesto
-          </label>
-
-          <div style={{ display: "grid", gap: 12 }}>
-
-            {/* SELECT */}
-            <div style={inputContainer}>
-              <FaBox style={iconInInput} />
-              <select
-                value={nuevoDetalle.idProducto}
-                onChange={(e) =>
-                  setNuevoDetalle({
-                    ...nuevoDetalle,
-                    idProducto: e.target.value,
-                  })
-                }
-                style={inputStyled}
+            <div
+              style={{
+                marginTop: "10px",
+                paddingTop: "20px",
+                borderTop: "1px solid #2d2d30",
+                display: "flex",
+                justifyContent: "flex-end",
+                gap: 10,
+              }}
+            >
+              <button
+                type="button"
+                onClick={() => setModalDiagnostico(false)}
+                style={{
+                  padding: "10px 20px",
+                  borderRadius: "6px",
+                  border: "1px solid #2d2d30",
+                  background: "transparent",
+                  color: "#cbd5e1",
+                  cursor: "pointer",
+                }}
               >
-                <option value="">Seleccionar repuesto</option>
-                {productos.map((p) => (
-                  <option
-                    key={p.id_producto || p.idProducto}
-                    value={p.id_producto || p.idProducto}
-                  >
-                    {p.nombre}
-                  </option>
-                ))}
-              </select>
+                Cancelar
+              </button>
+
+              <button
+                type="submit"
+                style={{
+                  background: "#ef4444",
+                  color: "white",
+                  padding: "10px 22px",
+                  border: "none",
+                  borderRadius: "6px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  fontWeight: "600",
+                  cursor: "pointer",
+                }}
+              >
+                <FaSave /> Guardar Diagnóstico
+              </button>
             </div>
-
-            {/* CANTIDAD */}
-            <div style={inputContainer}>
-              <FaCogs style={iconInInput} />
-              <input
-                type="number"
-                min="1"
-                value={nuevoDetalle.cantidad}
-                onChange={(e) =>
-                  setNuevoDetalle({
-                    ...nuevoDetalle,
-                    cantidad: Number(e.target.value),
-                  })
-                }
-                style={inputStyled}
-              />
-            </div>
-
-            {/* BOTÓN AGREGAR */}
-            <button
-              onClick={agregarDetalle}
-              style={{
-                background: "#3b82f6",
-                border: "none",
-                color: "white",
-                padding: "10px",
-                borderRadius: "6px",
-                cursor: "pointer",
-                fontWeight: "600",
-                display: "flex",
-                justifyContent: "center",
-                gap: 8,
-              }}
-            >
-              <FaPlus /> Agregar repuesto
-            </button>
           </div>
-
-          {/* TOTAL */}
-          <div
-            style={{
-              marginTop: 20,
-              paddingTop: 15,
-              borderTop: "1px solid #2d2d30",
-              display: "flex",
-              justifyContent: "space-between",
-              color: "#f1f5f9",
-            }}
-          >
-            <strong>Total</strong>
-            <strong>S/ {totalGeneral.toFixed(2)}</strong>
-          </div>
-
-          {/* ACCIONES */}
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "flex-end",
-              gap: 10,
-              marginTop: 20,
-            }}
-          >
-            <button
-              onClick={aprobarOrden}
-              style={{
-                background: "#22c55e",
-                border: "none",
-                color: "white",
-                padding: "10px 18px",
-                borderRadius: "6px",
-                fontWeight: "600",
-                cursor: "pointer",
-                display: "flex",
-                gap: 8,
-                alignItems: "center",
-              }}
-            >
-              <FaSave /> Aprobar
-            </button>
-
-            <button
-              onClick={() => setShowModal(false)}
-              style={{
-                padding: "10px 18px",
-                borderRadius: "6px",
-                border: "1px solid #2d2d30",
-                background: "transparent",
-                color: "#cbd5e1",
-                cursor: "pointer",
-              }}
-            >
-              Cancelar
-            </button>
-          </div>
-
-        </div>
+        </form>
       </div>
     </div>
   );
-}
+};
 
 export default DiagnosticoModal;
