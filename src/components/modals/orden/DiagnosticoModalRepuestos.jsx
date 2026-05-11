@@ -1,7 +1,7 @@
 import React from "react";
 import { FaTimes, FaPlus, FaSave, FaWrench } from "react-icons/fa";
 
-function DiagnosticoModal({
+function DiagnosticoModalRepuestos({
   showModal,
   setShowModal,
   ordenSeleccionada,
@@ -237,4 +237,4 @@ function DiagnosticoModal({
   );
 }
 
-export default DiagnosticoModal;
+export default DiagnosticoModalRepuestos;

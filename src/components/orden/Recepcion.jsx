@@ -361,8 +361,8 @@ function Recepcion() {
       />
 
       <DiagnosticoModal
-        modalDiagnostico={modalDiagnostico}
-        setModalDiagnostico={setModalDiagnostico}
+        showModal={modalDiagnostico}
+        setShowModal={setModalDiagnostico}
         guardarDiagnostico={guardarDiagnostico}
         diagnosticoForm={diagnosticoForm}
         handleDiagnosticoChange={handleDiagnosticoChange}

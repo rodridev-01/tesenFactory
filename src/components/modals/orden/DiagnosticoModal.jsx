@@ -1,7 +1,7 @@
 import React from "react";
 import { FaTimes, FaPlus, FaSave, FaCheck, FaCogs, FaBox } from "react-icons/fa";
 
-function RepuestoModal({
+function DiagnosticoModal({
   showModal,
   setShowModal,
   ordenSeleccionada,
@@ -268,4 +268,4 @@ function RepuestoModal({
   );
 }
 
-export default RepuestoModal;
+export default DiagnosticoModal;
