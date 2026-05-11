@@ -171,6 +171,9 @@ function Recepcion() {
   };
 
   const abrirDiagnostico = (orden) => {
+    //prueba--
+    console.log("DIAGNOSTICO CLICK", orden);
+
     setDiagnosticoForm({
       idOrden: orden.id_orden,
       diagnostico: "",
