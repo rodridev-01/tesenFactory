@@ -26,10 +26,14 @@ function Stock() {
   const loadAll = async () => {
     try {
       const productosData = await fetchWithAuth("/productos/taller/1");
-      setProductos(productosData);
+      const productosFisicos = productosData.filter(
+        (p) => p.tipo === "PRODUCTO"
+      );
+      setProductos(productosFisicos);
 
       const stockData = await fetchWithAuth(`/stock/almacen/${idAlmacen}`);
       setStock(stockData);
+
     } catch (err) {
       console.error("Error cargando datos:", err);
       alert("Error al cargar datos: " + err.message);

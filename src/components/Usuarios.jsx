@@ -13,7 +13,7 @@ function Usuarios() {
 
     const [form, setForm] = useState({
         nombre: "", apellido: "", dni: "", username: "", email: "",
-        password: "", telefono: "", direccion: "", idRol: "", idTaller: ""
+        password: "", telefono: "", direccion: "", idRol: "", idTaller: "1"
     });
 
     const [search, setSearch] = useState("");
@@ -39,7 +39,7 @@ function Usuarios() {
     const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
     const resetForm = () => {
-        setForm({ nombre: "", apellido: "", dni: "", username: "", email: "", password: "", telefono: "", direccion: "", idRol: "", idTaller: "" });
+        setForm({ nombre: "", apellido: "", dni: "", username: "", email: "", password: "", telefono: "", direccion: "", idRol: "", idTaller: "1" });
         setEditId(null);
     };
 

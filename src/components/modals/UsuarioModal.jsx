@@ -291,26 +291,18 @@ function UsuarioModal({
             </div>
 
             <div>
-              <label style={labelStyle}>Taller *</label>
+              <label style={labelStyle}>Taller</label>
               <div style={inputContainer}>
                 <FaBuilding style={iconInInput} />
-                <select
-                  name="idTaller"
-                  value={form.idTaller}
-                  onChange={handleChange}
+                <input
+                  value={talleres.find(t => t.idTaller === 1)?.nombre || "Principal"}
+                  disabled
                   style={{
                     ...inputStyled,
-                    appearance: "none",
-                    cursor: "pointer",
+                    opacity: 0.7,
+                    cursor: "not-allowed",
                   }}
-                >
-                  <option value="">Seleccione taller...</option>
-                  {talleres.map((t) => (
-                    <option key={t.idTaller} value={t.idTaller}>
-                      {t.nombre}
-                    </option>
-                  ))}
-                </select>
+                />
               </div>
             </div>
           </div>
