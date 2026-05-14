@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { fetchWithAuth } from "../../services/authService";
 import { FaSearch } from "react-icons/fa";
 import OrderCard from "../layout/OrdenCard";
+import { generarBoletaPDF } from "../../utils/GenerarBoleta";
 
 function Entrega() {
 
@@ -307,7 +308,7 @@ function Entrega() {
         renderContent={renderOrdenContent}
         buttonConfig={{
           prev: false,
-          print: false,
+          print: true,
           edit: false,
           diagnostic: false,
           details: true,
@@ -319,6 +320,12 @@ function Entrega() {
         buttonActions={{
           details: (orden) => console.log("Detalles", orden),
           view: (orden) => console.log("Ver", orden),
+          print: (orden) =>
+            generarBoletaPDF(orden, {
+              getClienteNombre,
+              getVehiculoNombre,
+              getTecnicoNombre,
+            }),
         }}
       />
 
