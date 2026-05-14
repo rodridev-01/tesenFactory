@@ -100,14 +100,19 @@ function DiagnosticoModalRepuestos({
                     display: "flex",
                     alignItems: "center",
                     gap: "5px",
-                    background: "#ff6060",
+                    background:
+                      producto?.tipo === "SERVICIO"
+                        ? "#ef4444"
+                        : "#3b82f6",
                     borderRadius: "12px",
                     fontSize: "14px",
                     padding: "6px",
                     justifyContent: "center",
+                    color: "white",
+                    fontWeight: "600",
                   }}
                 >
-                  Servicio
+                  {producto?.tipo || "N/A"}
                 </div>
 
                 {/* SERVICIO */}

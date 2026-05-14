@@ -1,5 +1,5 @@
 import React from "react";
-import { FaTimes, FaPlus, FaSave, FaCheck } from "react-icons/fa";
+import { FaTimes, FaPlus, FaSave, FaTrash } from "react-icons/fa";
 
 function RepuestoModal({
   showModal,
@@ -10,7 +10,7 @@ function RepuestoModal({
   nuevoDetalle,
   setNuevoDetalle,
   agregarDetalle,
-  aprobarDetalle,
+  eliminarDetalle,
   aprobarOrden,
 }) {
   if (!showModal) return null;
@@ -38,6 +38,15 @@ function RepuestoModal({
   const repuestos = productos || [];
 
   const totalGeneral = servicios.reduce((acc, d) => acc + (d.total || 0), 0);
+
+  const getTipoColor = (tipo) => {
+    switch (tipo) {
+      case "PRODUCTO":
+        return "#3b82f6";
+      default:
+        return "#ef4444";
+    }
+  };
 
   return (
     <div className="modal-overlay" onClick={() => setShowModal(false)}>
@@ -85,61 +94,68 @@ function RepuestoModal({
           {/* ================= SERVICIOS ================= */}
           <label style={labelStyle}>Servicios (desde diagnóstico)</label>
 
-          {servicios.map((d, i) => (
-            <div
-              key={i}
-              style={{
-                display: "grid",
-                gridTemplateColumns: "90px 2fr 1fr 1fr 90px",
-                gap: "8px",
-                marginBottom: "10px",
-                alignItems: "center",
-              }}
-            >
+          {servicios.map((d, i) => {
+
+            const producto = productos.find(
+              (p) =>
+                Number(p.id_producto || p.idProducto) === Number(d.idProducto)
+            );
+
+            return (
               <div
+                key={i}
                 style={{
-                  background: "#ef4444",
-                  color: "white",
-                  borderRadius: "12px",
-                  fontSize: "12px",
-                  textAlign: "center",
-                  padding: "6px",
-                  fontWeight: "600",
+                  display: "grid",
+                  gridTemplateColumns: "90px 2fr 1fr 1fr 50px",
+                  gap: "8px",
+                  marginBottom: "10px",
+                  alignItems: "center",
                 }}
               >
-                Servicio
+                <div
+                  style={{
+                    background: getTipoColor(producto?.tipo),
+                    color: "white",
+                    borderRadius: "12px",
+                    fontSize: "12px",
+                    textAlign: "center",
+                    padding: "6px",
+                    fontWeight: "600",
+                  }}
+                >
+                  {producto?.tipo || "SERVICIO"}
+                </div>
+
+                <div style={{ color: "#f1f5f9" }}>
+                  {d.descripcion}
+                </div>
+
+                <input
+                  value={d.precioUnitario}
+                  disabled
+                  style={inputStyled}
+                />
+
+                <input
+                  value={d.cantidad}
+                  disabled
+                  style={inputStyled}
+                />
+
+                <button
+                  onClick={() => eliminarDetalle(d.id)}
+                  style={{
+                    background: "transparent",
+                    border: "none",
+                    color: "#ef4444",
+                    cursor: "pointer",
+                  }}
+                >
+                  <FaTrash />
+                </button>
               </div>
-
-              <div style={{ color: "#f1f5f9" }}>{d.descripcion}</div>
-
-              <input
-                value={d.precioUnitario}
-                disabled
-                style={inputStyled}
-              />
-
-              <input
-                value={d.cantidad}
-                disabled
-                style={inputStyled}
-              />
-
-              <button
-                onClick={() => aprobarDetalle(d.id)}
-                disabled={d.aprobado}
-                style={{
-                  background: d.aprobado ? "#475569" : "#22c55e",
-                  border: "none",
-                  color: "white",
-                  borderRadius: "6px",
-                  cursor: d.aprobado ? "not-allowed" : "pointer",
-                  height: "42px",
-                }}
-              >
-                {d.aprobado ? "✔" : <FaCheck />}
-              </button>
-            </div>
-          ))}
+            );
+          })}
 
           {/* ================= REPUESTOS ================= */}
           <label style={{ ...labelStyle, marginTop: "20px" }}>

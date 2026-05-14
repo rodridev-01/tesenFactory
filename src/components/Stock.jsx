@@ -69,14 +69,18 @@ function Stock() {
     setIdStock(row.idStock); setIdProducto(row.idProducto); setStockActual(row.stockActual); setStockMinimo(row.stockMinimo);
     setModalOpen(true);
   };
-
-  const handleDelete = async (idStock) => {
-    if (!window.confirm("¿Está seguro de eliminar este registro de stock?")) return;
-    try {
-      await fetchWithAuth(`/stock/${idStock}`, { method: "DELETE" });
-      await loadAll(); alert("Eliminado correctamente");
-    } catch (err) { alert("Error al eliminar: " + err.message); }
-  };
+// const handleDelete = async (idStock) => {
+//   if (!window.confirm("¿Está seguro de eliminar este registro de stock?")) return;
+//   try {
+//     await fetchWithAuth(`/stock/${idStock}`, {
+//       method: "DELETE"
+//     });
+//     await loadAll();
+//     alert("Eliminado correctamente");
+//   } catch (err) {
+//     alert("Error al eliminar: " + err.message);
+//   }
+// };
 
   const handleAddStock = async (idStock) => {
     const cantidad = prompt("Ingrese cantidad a agregar:");
@@ -125,7 +129,6 @@ function Stock() {
           <button onClick={() => handleAddStock(row.idStock)} title="Agregar Stock" style={{ border: 'none', background: 'transparent', color: '#10b981', cursor: 'pointer' }}><FaPlus size={16} /></button>
           <button onClick={() => handleRemoveStock(row.idStock)} title="Quitar Stock" style={{ border: 'none', background: 'transparent', color: '#f59e0b', cursor: 'pointer' }}><FaLayerGroup size={16} /></button>
           <button onClick={() => openEditModal(row)} title="Editar" style={{ border: 'none', background: 'transparent', color: '#3b82f6', cursor: 'pointer' }}><FaEdit size={18} /></button>
-          <button onClick={() => handleDelete(row.idStock)} title="Eliminar" style={{ border: 'none', background: 'transparent', color: '#ef4444', cursor: 'pointer' }}><FaTrash size={18} /></button>
         </div>
       ),
     }

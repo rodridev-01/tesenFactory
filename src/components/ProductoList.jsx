@@ -446,24 +446,6 @@ function Productos() {
           data={dataWithStock}
           subHeaderComponent={
             <div style={{ display: "flex", gap: 10, alignItems: "center", width: "100%", justifyContent: "flex-end" }}>
-              <select
-                value={idTaller}
-                onChange={(e) => loadProductos(e.target.value)}
-                style={{
-                  padding: "8px 12px",
-                  borderRadius: "6px",
-                  border: "1px solid #2d2d30",
-                  background: "#151517",
-                  color: "#f1f5f9",
-                }}
-              >
-                {talleres.map((t) => (
-                  <option key={t.idTaller} value={t.idTaller}>
-                    {t.nombre}
-                  </option>
-                ))}
-              </select>
-
               <div style={{ position: "relative", width: "250px" }}>
                 <FaSearch style={{ position: "absolute", top: "10px", left: "12px", color: "#9ca3af" }} />
                 <input

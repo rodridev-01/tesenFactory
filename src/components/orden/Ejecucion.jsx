@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { fetchWithAuth } from "../../services/authService";
 import { FaSearch } from "react-icons/fa";
 import OrderCard from "../layout/OrdenCard";
+import EjecucionModal from "../modals/orden/EjecucionModal";
 
 function Ejecucion() {
 
@@ -9,7 +10,15 @@ function Ejecucion() {
   const [clientes, setClientes] = useState([]);
   const [vehiculos, setVehiculos] = useState([]);
   const [usuarios, setUsuarios] = useState([]);
+  const [productos, setProductos] = useState([]);
   const [search, setSearch] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [ordenSeleccionada, setOrdenSeleccionada] = useState(null);
+
+  const [ejecucionForm, setEjecucionForm] = useState({
+    informeReparacion: "",
+    recomendaciones: "",
+  });
 
   useEffect(() => {
     loadAll();
@@ -17,22 +26,41 @@ function Ejecucion() {
 
   const loadAll = async () => {
     try {
+
       const [
         ordenesData,
         clientesData,
         vehiculosData,
-        usuariosData
+        usuariosData,
+        productosData
       ] = await Promise.all([
         fetchWithAuth("/ordenes/estado/ejecucion"),
         fetchWithAuth("/clientes/taller/1"),
         fetchWithAuth("/vehiculos"),
-        fetchWithAuth("/usuarios")
+        fetchWithAuth("/usuarios"),
+        fetchWithAuth("/productos/taller/1")
       ]);
 
-      setOrdenes(ordenesData || []);
+      setProductos(productosData || []);
       setClientes(clientesData || []);
       setVehiculos(vehiculosData || []);
       setUsuarios(usuariosData || []);
+
+      const ordenesBase = ordenesData || [];
+
+      const ordenesConDetalles = await Promise.all(
+        ordenesBase.map(async (o) => {
+          const det = await fetchWithAuth(
+            `/ordenes/${o.id_orden}/detalles`
+          );
+          return {
+            ...o,
+            detalles: det || []
+          };
+        })
+      );
+
+      setOrdenes(ordenesConDetalles);
 
     } catch (err) {
       console.error(err);
@@ -66,6 +94,28 @@ function Ejecucion() {
 
   const renderOrdenContent = (orden, badgeStyle) => {
     const km = orden.kilometrajeEntrada || orden.kilometraje_entrada;
+
+    const detalles = orden.detalles || [];
+
+    const servicios = detalles.filter((d) => {
+      const producto = productos.find(
+        p =>
+          Number(p.id_producto || p.idProducto) ===
+          Number(d.id_producto || d.idProducto)
+      );
+
+      return producto?.tipo === "SERVICIO";
+    });
+
+    const repuestos = detalles.filter((d) => {
+      const producto = productos.find(
+        p =>
+          Number(p.id_producto || p.idProducto) ===
+          Number(d.id_producto || d.idProducto)
+      );
+
+      return producto?.tipo !== "SERVICIO";
+    });
 
     return (
       <>
@@ -102,14 +152,86 @@ function Ejecucion() {
           {orden.danosVisuales || orden.danos_visuales || "-"}
         </div>
 
-        <div>
-          <strong>Fecha Ingreso:</strong>{" "}
-          {orden.fecha_ingreso
-            ? new Date(orden.fecha_ingreso).toLocaleString("es-PE", {
-                dateStyle: "short",
-                timeStyle: "short"
-              })
-            : "-"}
+        <div style={{ marginTop: 10 }}>
+          <strong>Diagnóstico:</strong>{" "}
+          {orden.diagnostico || "Sin diagnóstico"}
+        </div>
+
+        <div style={{ marginTop: 12 }}>
+          <strong>Servicios:</strong>
+
+          <div
+            style={{
+              marginTop: 6,
+              display: "flex",
+              flexWrap: "wrap",
+              gap: 6
+            }}
+          >
+            {servicios.length === 0 ? (
+              <span style={{ color: "#9ca3af", fontSize: "0.8rem" }}>
+                Sin servicios
+              </span>
+            ) : (
+              servicios.map((d, i) => (
+                <span
+                  key={i}
+                  style={{
+                    padding: "4px 8px",
+                    background: "#1f1f22",
+                    border: "1px solid #2d2d30",
+                    borderRadius: "999px",
+                    fontSize: "0.75rem",
+                    color: "#cbd5e1",
+                  }}
+                >
+                  {d.descripcion} x{d.cantidad}
+                </span>
+              ))
+            )}
+          </div>
+        </div>
+
+        <div style={{ marginTop: 12 }}>
+          <strong>Repuestos:</strong>
+
+          <div
+            style={{
+              marginTop: 6,
+              display: "flex",
+              flexWrap: "wrap",
+              gap: 6
+            }}
+          >
+            {repuestos.length === 0 ? (
+              <span style={{ color: "#9ca3af", fontSize: "0.8rem" }}>
+                Sin repuestos
+              </span>
+            ) : (
+              repuestos.map((d, i) => (
+                <span
+                  key={i}
+                  style={{
+                    padding: "4px 8px",
+                    background: "#1f1f22",
+                    border: "1px solid #2d2d30",
+                    borderRadius: "999px",
+                    fontSize: "0.75rem",
+                    color: "#cbd5e1",
+                  }}
+                >
+                  {d.descripcion} x{d.cantidad}
+                </span>
+              ))
+            )}
+          </div>
+        </div>
+
+        <div style={{ marginTop: 12 }}>
+          <strong>Total:</strong>{" "}
+          S/. {detalles
+            .reduce((acc, d) => acc + Number(d.total || 0), 0)
+            .toFixed(2)}
         </div>
       </>
     );
@@ -137,6 +259,38 @@ function Ejecucion() {
         />
       </div>
 
+      <EjecucionModal
+        showModal={showModal}
+        setShowModal={setShowModal}
+        ordenSeleccionada={ordenSeleccionada}
+        guardarEjecucion={async (formData) => {
+          try {
+
+            await fetchWithAuth("/ordenes/ejecucion", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                idOrden: ordenSeleccionada.id_orden,
+                informeReparacion:
+                  formData.informeReparacion,
+                recomendaciones:
+                  formData.recomendaciones,
+              }),
+            });
+
+            alert("Orden enviada a entrega");
+            setShowModal(false);
+            await loadAll();
+
+          } catch (err) {
+            alert(err.message);
+          }
+
+        }}
+      />
+
       {/* ORDER CARD */}
       <OrderCard
         title="Órdenes en Ejecución"
@@ -151,11 +305,21 @@ function Ejecucion() {
           delete: false,
           comments: false,
           view: true,
-          next: false,
+          next: true,
         }}
         buttonActions={{
           details: (orden) => console.log("Detalles", orden),
           view: (orden) => console.log("Ver orden", orden),
+          next: (orden) => {
+            setOrdenSeleccionada(orden);
+
+            setEjecucionForm({
+              informeReparacion: "",
+              recomendaciones: "",
+            });
+
+            setShowModal(true);
+          },
         }}
       />
 

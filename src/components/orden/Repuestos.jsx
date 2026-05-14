@@ -6,10 +6,12 @@ import RepuestoModal from "../modals/orden/RepuestoModal";
 function Repuesto() {
 
   const [ordenes, setOrdenes] = useState([]);
-  const [ordenesConDetalles, setOrdenesConDetalles] = useState([]);
   const [detalles, setDetalles] = useState([]);
   const [productos, setProductos] = useState([]);
   const [stock, setStock] = useState([]);
+  const [clientes, setClientes] = useState([]);
+  const [vehiculos, setVehiculos] = useState([]);
+  const [usuarios, setUsuarios] = useState([]);
   const [ordenSeleccionada, setOrdenSeleccionada] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
@@ -23,14 +25,28 @@ function Repuesto() {
   }, []);
 
   const loadOrdenes = async () => {
-    const data = await fetchWithAuth(
-      "/ordenes/estado/repuestos"
-    );
 
-    const ordenesBase = data || [];
+    const [
+      ordenesData,
+      clientesData,
+      vehiculosData,
+      usuariosData
+    ] = await Promise.all([
+      fetchWithAuth("/ordenes/estado/repuestos"),
+      fetchWithAuth("/clientes/taller/1"),
+      fetchWithAuth("/vehiculos"),
+      fetchWithAuth("/usuarios")
+    ]);
+
+    setClientes(clientesData || []);
+    setVehiculos(vehiculosData || []);
+    setUsuarios(usuariosData || []);
+
+    const ordenesBase = ordenesData || [];
 
     const ordenesConDetalles = await Promise.all(
       ordenesBase.map(async (o) => {
+
         const det = await fetchWithAuth(
           `/ordenes/${o.id_orden}/detalles`
         );
@@ -41,12 +57,15 @@ function Repuesto() {
         };
       })
     );
-
     setOrdenes(ordenesConDetalles);
   };
 
   const loadDetalles = async (idOrden) => {
-    const data = await fetchWithAuth(`/ordenes/${idOrden}/detalles`);
+
+    const data = await fetchWithAuth(
+      `/ordenes/${idOrden}/detalles`
+    );
+
     setDetalles(data || []);
   };
 
@@ -55,6 +74,7 @@ function Repuesto() {
   );
 
   const loadExtras = async () => {
+
     const [prod, stk] = await Promise.all([
       fetchWithAuth("/productos/taller/1"),
       fetchWithAuth("/stock/almacen/1")
@@ -65,9 +85,12 @@ function Repuesto() {
   };
 
   const openModal = async (orden) => {
+
     setOrdenSeleccionada(orden);
+
     await loadDetalles(orden.id_orden);
     await loadExtras();
+
     setShowModal(true);
   };
 
@@ -81,12 +104,34 @@ function Repuesto() {
       s => Number(s.idProducto || s.id_producto) === Number(idProducto)
     );
 
-  const aprobarDetalle = async (id) => {
-    await fetchWithAuth(`/ordenes/detalle/${id}/aprobar`, {
-      method: "PUT"
-    });
+  const getClienteNombre = (id) => {
+    const c = clientes.find(c =>
+      (c.idCliente || c.id_cliente) === id
+    );
 
-    await loadDetalles(ordenSeleccionada.id_orden);
+    return c
+      ? `${c.nombre} ${c.apellido}`
+      : id;
+  };
+
+  const getVehiculoNombre = (id) => {
+    const v = vehiculos.find(v =>
+      (v.idVehiculo || v.id_vehiculo) === id
+    );
+
+    return v
+      ? `${v.marcaNombre} ${v.modelo} - ${v.placa}`
+      : id;
+  };
+
+  const getTecnicoNombre = (id) => {
+    const t = usuarios.find(u =>
+      (u.idUsuario || u.id_usuario) === id
+    );
+
+    return t
+      ? `${t.nombre} ${t.apellido}`
+      : id;
   };
 
   const agregarDetalle = async () => {
@@ -105,19 +150,70 @@ function Repuesto() {
 
     await fetchWithAuth("/ordenes/detalle", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify({
         idOrden: ordenSeleccionada.id_orden,
         idProducto: nuevoDetalle.idProducto,
         descripcion: producto.nombre,
-        precioUnitario: producto.precio_venta || producto.precioVenta,
+        precioUnitario:
+          producto.precio_venta || producto.precioVenta,
         cantidad: nuevoDetalle.cantidad,
-        total: producto.precio_venta * nuevoDetalle.cantidad
+        total:
+          (producto.precio_venta || producto.precioVenta)
+          * nuevoDetalle.cantidad
       })
     });
 
-    setNuevoDetalle({ idProducto: "", cantidad: 1 });
+    setNuevoDetalle({
+      idProducto: "",
+      cantidad: 1
+    });
+
     await loadDetalles(ordenSeleccionada.id_orden);
+    await loadOrdenes();
+  };
+
+  const aprobarOrden = async () => {
+
+    try {
+
+      await fetchWithAuth(
+        `/ordenes/${ordenSeleccionada.id_orden}/aprobar`,
+        {
+          method: "PUT",
+        }
+      );
+      alert("Orden aprobada correctamente");
+      setShowModal(false);
+      await loadOrdenes();
+    } catch (err) {
+      console.error(err);
+      alert(err.message || "No se pudo aprobar la orden");
+    }
+  };
+
+  const eliminarDetalle = async (idDetalle) => {
+    if (!window.confirm("¿Eliminar detalle?")) {
+      return;
+    }
+    try {
+      await fetchWithAuth(
+        `/ordenes/detalle/${idDetalle}`,
+        {
+          method: "DELETE",
+        }
+      );
+      await loadDetalles(ordenSeleccionada.id_orden);
+      await loadOrdenes();
+      alert("Detalle eliminado");
+    } catch (err) {
+      console.error(err);
+      alert(
+        err.message || "No se pudo eliminar"
+      );
+    }
   };
 
   return (
@@ -132,9 +228,12 @@ function Repuesto() {
       <OrderCard
         title="Órdenes en Repuestos"
         data={ordenes}
+
         renderContent={(orden, badgeStyle) => (
+
           <>
             <div style={{ marginBottom: "10px" }}>
+
               <strong style={{ fontSize: "1rem" }}>
                 Orden #{orden.id_orden}
               </strong>
@@ -142,28 +241,57 @@ function Repuesto() {
               <span style={badgeStyle("#8b5cf6")}>
                 {orden.estado || "Repuestos"}
               </span>
-            </div>
 
-            <div>
-              <strong>Vehículo:</strong>{" "}
-              {orden.vehiculo || orden.placa || "-"}
             </div>
 
             <div>
               <strong>Cliente:</strong>{" "}
-              {orden.cliente || "-"}
+              {getClienteNombre(orden.id_cliente)}
             </div>
 
-            <div style={{ marginTop: 10 }}>
-              <strong>Servicios:</strong>
+            <div>
+              <strong>Vehículo:</strong>{" "}
+              {getVehiculoNombre(orden.id_vehiculo)}
+            </div>
 
-              <div style={{ marginTop: 6, display: "flex", flexWrap: "wrap", gap: 6 }}>
+            <div>
+              <strong>Técnico:</strong>{" "}
+              {getTecnicoNombre(orden.id_tecnico)}
+            </div>
+
+            <div style={{ marginTop: 8 }}>
+              <strong>Diagnóstico:</strong>{" "}
+              {orden.diagnostico || "Sin diagnóstico"}
+            </div>
+
+            <div style={{ marginTop: 8 }}>
+
+              <strong>Detalles:</strong>
+
+              <div
+                style={{
+                  marginTop: 6,
+                  display: "flex",
+                  flexWrap: "wrap",
+                  gap: 6
+                }}
+              >
+
                 {(orden.detalles || []).length === 0 ? (
-                  <span style={{ color: "#9ca3af", fontSize: "0.85rem" }}>
-                    Sin servicios
+
+                  <span
+                    style={{
+                      color: "#9ca3af",
+                      fontSize: "0.85rem"
+                    }}
+                  >
+                    Sin detalles
                   </span>
+
                 ) : (
+
                   orden.detalles.map((d, i) => (
+
                     <span
                       key={i}
                       style={{
@@ -179,7 +307,9 @@ function Repuesto() {
                     </span>
                   ))
                 )}
+
               </div>
+
             </div>
 
             <div style={{ marginTop: 10 }}>
@@ -189,17 +319,9 @@ function Repuesto() {
                 .toFixed(2)}
             </div>
 
-            <div style={{ marginTop: 10 }}>
-              <strong>Fecha:</strong>{" "}
-              {orden.fecha_ingreso
-                ? new Date(orden.fecha_ingreso).toLocaleString("es-PE", {
-                  dateStyle: "short",
-                  timeStyle: "short",
-                })
-                : "-"}
-            </div>
           </>
         )}
+
         buttonConfig={{
           prev: false,
           print: false,
@@ -208,13 +330,12 @@ function Repuesto() {
           details: true,
           delete: false,
           comments: false,
-          view: true,
-          next: true,
+          view: false,
+          next: false,
         }}
+
         buttonActions={{
           details: openModal,
-          view: (orden) => console.log("Visualizar", orden),
-          next: (orden) => console.log("Siguiente", orden),
         }}
       />
 
@@ -227,33 +348,8 @@ function Repuesto() {
         nuevoDetalle={nuevoDetalle}
         setNuevoDetalle={setNuevoDetalle}
         agregarDetalle={agregarDetalle}
-        aprobarDetalle={aprobarDetalle}
-        aprobarOrden={async () => {
-          try {
-            await fetchWithAuth(
-              `/ordenes/${ordenSeleccionada.id_orden}/aprobar`,
-              {
-                method: "PUT",
-              }
-            );
-
-            alert("Orden aprobada");
-            setShowModal(false);
-            loadOrdenes();
-
-          } catch (err) {
-            console.error(err);
-
-            if (
-              typeof err.message === "string" &&
-              err.message.includes("Faltan aprobar detalles")
-            ) {
-              alert("Debes aprobar todos los repuestos antes de continuar");
-            } else {
-              alert("No se pudo aprobar la orden");
-            }
-          }
-        }}
+        eliminarDetalle={eliminarDetalle}
+        aprobarOrden={aprobarOrden}
       />
 
     </div>
